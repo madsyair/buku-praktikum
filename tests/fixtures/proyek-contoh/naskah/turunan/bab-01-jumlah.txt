@@ -1,0 +1,7 @@
+# judul: Penjabaran jumlah kuadrat simpangan
+simbol: mu: real
+simbol: n: integer, positive
+indeks: x
+langkah: Sum((x[i] - mu)**2, (i, 1, n))
+langkah: Sum(x[i]**2, (i, 1, n)) - 2*mu*Sum(x[i], (i, 1, n)) + n*mu**2   | jabarkan kuadrat, sifat linear
+manual: Var(Xbar) = sigma^2/n | rujukan bukti casella2002

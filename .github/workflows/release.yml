@@ -1,0 +1,39 @@
+name: Release
+
+# Rilis dibuat ketika VERSION berubah di main (atau tag v* didorong).
+# Tag v<VERSION> dibuat oleh alur ini, jadi tidak perlu mendorong tag dari lokal.
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read version
+        id: v
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=v$(tr -d '[:space:]' < VERSION)" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build .skill archive
+        run: zip -r buku-praktikum.skill buku-praktikum -x '*/__pycache__/*'
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.v.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.v.outputs.tag }}
+          files: buku-praktikum.skill
+          generate_release_notes: true
+          body: |
+            Skill Claude untuk menulis buku ajar dan modul praktikum statistika/komputasi secara multi-agen,
+            dengan sinergi Sokratik–Feynman, studi literatur terverifikasi, dan gerbang mutu G0–G9.

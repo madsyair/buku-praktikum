@@ -1,0 +1,82 @@
+konsep;utama;jenis;kurung_pertama;alternatif;catatan
+statistics (field);statistika;serapan;;;Ilmu, bedakan dengan statistik
+statistic;statistik;serapan;;;Nilai yang dihitung dari sampel atau data hasil olahan
+variable;variabel;serapan;;peubah;Serapan lebih populer daripada padanan asli
+random variable;variabel acak;serapan;;peubah acak;
+probability;peluang;indonesia;;probabilitas;Pilih satu, ganti bila lembaga memakai probabilitas
+expected value;nilai harapan;indonesia;expected value;;Operator E(X) boleh dibaca ekspektasi
+mean;rata-rata;indonesia;;rataan|rerata;
+variance;varians;serapan;;variansi;Hindari ragam bila tidak sesuai konvensi lembaga
+standard deviation;simpangan baku;indonesia;;standar deviasi|deviasi standar;Standar deviasi tidak sesuai pola frasa Indonesia
+standard error;galat baku;indonesia;standard error;;
+distribution;distribusi;serapan;;sebaran;
+probability density function;fungsi kepadatan peluang;indonesia;probability density function;fungsi densitas peluang;Singkatan pdf boleh dipakai setelah diperkenalkan
+cumulative distribution function;fungsi distribusi kumulatif;serapan;cumulative distribution function;;
+sample;sampel;serapan;;;Jangan memakai contoh untuk arti sample
+sampling;penarikan sampel;indonesia;sampling;;
+estimation;estimasi;serapan;;pendugaan|penaksiran;Ganti ke pendugaan bila lembaga memakai penduga
+estimator;estimator;serapan;;penduga|penaksir;Ganti ke penduga bila lembaga memakai penduga
+unbiased;tak bias;indonesia;;tidak bias;
+confidence interval;selang kepercayaan;indonesia;confidence interval;interval kepercayaan|interval konfidensi;
+hypothesis testing;uji hipotesis;serapan;;pengujian hipotesa|uji hipotesa;Hipotesa tidak baku
+null hypothesis;hipotesis nol;serapan;;;
+significance level;tingkat signifikansi;serapan;;taraf nyata;Pilih satu: signifikan atau nyata
+p-value;nilai-p;indonesia;p-value;;
+degrees of freedom;derajat bebas;indonesia;;derajat kebebasan;
+likelihood;likelihood;asing;kemungkinan;;Padanan perlu dicek di KBBI dan Glosarium Badan Bahasa
+maximum likelihood estimation;maximum likelihood estimation;asing;kemungkinan maksimum;;Singkatan MLE setelah diperkenalkan
+residual;residual;serapan;;sisaan;
+error (model);galat;indonesia;error;;Suku galat dalam model, juga untuk pesan galat program
+outlier;pencilan;indonesia;outlier;;
+regression;regresi;serapan;;;
+intercept;intersep;serapan;;;
+slope;kemiringan;indonesia;slope;;
+coefficient of determination;koefisien determinasi;serapan;;;
+multicollinearity;multikolinearitas;serapan;;;
+heteroscedasticity;heteroskedastisitas;serapan;;;
+goodness of fit;goodness of fit;asing;kebaikan suai;;
+bootstrap;bootstrap;asing;;;Tidak ada padanan baku, jelaskan maknanya pada kemunculan pertama
+resampling;penarikan sampel ulang;indonesia;resampling;;
+small area estimation;estimasi area kecil;indonesia;small area estimation;;Singkatan SAE setelah diperkenalkan
+random effect;efek acak;serapan;random effect;pengaruh acak;
+fixed effect;efek tetap;serapan;fixed effect;pengaruh tetap;
+mixed model;model efek campuran;indonesia;mixed model;;Bedakan dengan mixture model
+mixture model;mixture model;asing;model campuran hingga;;Bedakan dengan model efek campuran
+prior distribution;distribusi prior;serapan;;;Prior dan posterior adalah istilah teknis tanpa padanan baku
+scatter plot;diagram pencar;indonesia;scatter plot;;
+boxplot;boxplot;asing;diagram kotak-garis;;Padanan perlu dicek di Glosarium Badan Bahasa
+histogram;histogram;serapan;;;
+simulation;simulasi;serapan;;;
+convergence;konvergensi;serapan;;;
+derivative;turunan;indonesia;;derivatif;
+partial derivative;turunan parsial;indonesia;;;
+matrix;matriks;serapan;;;
+inverse;invers;serapan;;;
+transpose;transpos;serapan;;;
+eigenvalue;nilai eigen;indonesia;;;
+gradient;gradien;serapan;;;
+theorem;teorema;serapan;;;
+corollary;akibat;indonesia;corollary;korolari;
+proof;bukti;indonesia;;;
+set (math);himpunan;indonesia;;;
+sequence;barisan;indonesia;;;
+series;deret;indonesia;;;
+code;kode;serapan;;;
+script;skrip;serapan;;;
+package;paket;indonesia;package;;
+library;pustaka;indonesia;library;;
+loop;perulangan;indonesia;loop;;
+iteration;iterasi;serapan;;;
+array;array;asing;larik;;
+string;string;asing;untai;;Padanan perlu dicek di Glosarium Badan Bahasa
+data frame;data frame;asing;;;Tidak ada padanan baku, jelaskan sebagai tabel data berbaris dan berkolom
+bug;bug;asing;pepijat;;
+debugging;debugging;asing;awakutu;;
+output;keluaran;indonesia;output;;
+input;masukan;indonesia;input;;
+plot;grafik;indonesia;plot;;
+random number generator;pembangkit bilangan acak;indonesia;random number generator;;
+seed;seed;asing;;;Tidak ada padanan baku, jelaskan maknanya
+working directory;direktori kerja;indonesia;working directory;;
+download;unduh;indonesia;;download;
+install;pasang;indonesia;;install;Bentuk berimbuhan: memasang, dipasang

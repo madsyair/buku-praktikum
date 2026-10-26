@@ -1,0 +1,103 @@
+---
+title: "Judul Bab"
+---
+
+<!--
+Templat bab modul praktikum. Hapus bagian yang tidak dipakai.
+Pola contoh kode: pengantar → kode → penjelasan kode → keluaran asli → interpretasi.
+Fitur belajar (bila aktif di brief): pertanyaan pemantik, pertanyaan Sokratik, jelaskan kembali, miskonsepsi umum.
+-->
+
+Paragraf pembuka: kaitkan dengan bab sebelumnya dan sodorkan masalah yang akan dijawab bab ini.
+Bila cocok, mulai dengan kasus nyata atau pertanyaan yang sering muncul di lapangan.
+
+::: {.callout-note appearance="simple"}
+## Tujuan pembelajaran
+
+Setelah mempelajari bab ini, pembaca dapat:
+
+1. ...
+2. ...
+:::
+
+::: {.callout-tip appearance="simple"}
+## Pertanyaan pemantik
+
+1. Pertanyaan yang akan dijawab perlahan oleh bab ini, dirumuskan dari pertanyaan pemandu bab.
+:::
+
+## Ringkasan teori {#sec-teori}
+
+Intuisi lebih dulu, lalu definisi dan rumus.
+
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+$$ {#eq-rata-rata}
+
+dengan $n$ menyatakan ukuran sampel dan $x_i$ nilai amatan ke-$i$ [@kunci, hlm. ...].
+
+### Penurunan (bila membantu pemahaman)
+
+$$
+\begin{aligned}
+\text{langkah 1} &= \text{langkah 2} && \text{alasan} \\
+                 &= \text{langkah 3} && \text{alasan}
+\end{aligned}
+$$
+
+Makna hasil penurunan dalam satu atau dua kalimat.
+
+## Persiapan {#sec-persiapan}
+
+```{r}
+#| eval: false
+install.packages(c("..."))
+```
+
+```{r}
+library(...)
+set.seed(2025)
+```
+
+## Contoh terbimbing {#sec-contoh}
+
+Pengantar: apa yang akan dikerjakan dan mengapa.
+
+```{r}
+# kode singkat untuk satu langkah logis
+```
+
+Penjelasan kode: fungsi, argumen penting, dan bawaan yang memengaruhi hasil.
+
+Interpretasi keluaran: makna angka dalam konteks masalah, ketidakpastiannya, dan batasan kesimpulan.
+
+::: {.callout-note appearance="simple"}
+## Pertanyaan Sokratik
+
+- Apa yang terjadi pada hasil di atas bila ... (akibat)?
+- Asumsi mana yang paling mungkin dilanggar pada data ini (asumsi)?
+:::
+
+## Tugas praktikum {#sec-tugas}
+
+1. ...
+
+## Pertanyaan diskusi
+
+1. ...
+
+## Jelaskan kembali
+
+Jelaskan dengan kata-katamu sendiri, kepada teman yang belum mempelajari bab ini, ... Gunakan paling banyak lima kalimat dan tanpa rumus. Lalu bandingkan penjelasanmu dengan rangkuman bab: bagian mana yang belum tercakup?
+
+## Miskonsepsi umum
+
+- **Anggapan keliru**: ... **Mengapa keliru**: pertanyaan yang membantu pembaca menemukan sendiri kekeliruannya, lalu penjelasan singkat.
+
+## Rangkuman
+
+...
+
+## Bacaan lanjut
+
+- [@kunci] — alasan singkat mengapa layak dibaca.

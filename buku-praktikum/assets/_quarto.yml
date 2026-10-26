@@ -1,0 +1,59 @@
+# Templat proyek buku Quarto. Sesuaikan judul, penulis, bab, dan format.
+project:
+  type: book
+
+book:
+  title: "Judul Buku"
+  author: "Nama Penulis"
+  date: today
+  chapters:
+    - index.qmd          # prakata
+    - bab/bab-01.qmd
+    - bab/bab-02.qmd
+    - glosarium.qmd
+    - daftar-pustaka.qmd
+  appendices:
+    - lampiran/lingkungan.qmd   # versi perangkat lunak dan paket
+
+bibliography: pustaka.bib
+csl: apa.csl               # unduh dari repositori gaya CSL bila belum ada
+lang: id
+
+language:
+  toc-title-document: "Daftar Isi"
+  section-title-references: "Daftar Pustaka"
+  section-title-appendices: "Lampiran"
+  crossref-fig-title: "Gambar"
+  crossref-tbl-title: "Tabel"
+  crossref-eq-prefix: "Persamaan"
+  crossref-ch-prefix: "Bab"
+  crossref-sec-prefix: "Subbab"
+  crossref-thm-title: "Teorema"
+  crossref-def-title: "Definisi"
+  crossref-exm-title: "Contoh"
+  crossref-exr-title: "Latihan"
+  crossref-prf-title: "Bukti"
+  callout-note-title: "Catatan"
+  callout-tip-title: "Tips"
+  callout-warning-title: "Perhatian"
+  callout-important-title: "Penting"
+
+execute:
+  echo: true
+  warning: true
+  freeze: auto             # hasil eksekusi disimpan, hanya dijalankan ulang bila kode berubah
+
+# Satu dokumen memakai satu mesin eksekusi. Bab R dan Python dapat digabung lewat knitr + reticulate;
+# bab Julia sebaiknya memakai mesin julia atau jupyter di berkasnya sendiri (engine: julia).
+
+format:
+  html:
+    theme: cosmo
+    code-copy: true
+    number-sections: true
+  pdf:
+    documentclass: scrreprt
+    number-sections: true
+    papersize: a4
+  docx:
+    number-sections: true

@@ -1,0 +1,30 @@
+---
+title: "Rata-rata dan Ketidakpastiannya"
+---
+
+::: {.callout-tip appearance="simple"}
+## Pertanyaan pemantik
+
+1. Bila dua petugas survei mengambil sampel berbeda, mengapa rata-rata mereka tidak sama?
+:::
+
+## Rata-rata sampel
+
+Rata-rata sampel meringkas sekumpulan pengamatan menjadi satu angka. Untuk sampel berukuran $n$, rata-rata dihitung dengan menjumlahkan semua nilai lalu membaginya dengan $n$.
+
+## Varians rata-rata sampel
+
+Rata-rata sampel acak berukuran $n$ memiliki varians $\sigma^2/n$ [@casella2002]. Akibatnya, rata-rata dari sampel yang lebih besar cenderung lebih dekat ke rata-rata populasi.
+
+Kita hitung rata-rata pengeluaran lima rumah tangga contoh.
+
+```{r}
+x <- c(812, 945, 1020, 760, 1105)
+mean(x)
+```
+
+Fungsi `mean()` menjumlahkan kelima nilai lalu membaginya dengan banyaknya nilai. Hasilnya 928,4 ribu rupiah, yaitu pengeluaran rata-rata per kapita kelima rumah tangga tersebut.
+
+## Jelaskan kembali
+
+Jelaskan kepada temanmu mengapa rata-rata dari banyak rumah tangga lebih stabil daripada pengeluaran satu rumah tangga.

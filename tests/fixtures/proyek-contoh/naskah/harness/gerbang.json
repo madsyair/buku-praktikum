@@ -1,0 +1,12 @@
+{
+  "eyd_periksa": "tidak-tersedia",
+  "eyd_ragam": "ilmiah",
+  "izinkan_kode_tidak_dijalankan": false,
+  "batas_waktu_kode": 900,
+  "fitur_belajar_penanda": [
+    "Pertanyaan pemantik",
+    "Jelaskan kembali"
+  ],
+  "min_tujuan_pembelajaran": 3,
+  "min_kata_penjelasan_kode": 8
+}
