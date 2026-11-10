@@ -2,6 +2,10 @@
 title: "Rata-rata dan Ketidakpastiannya"
 ---
 
+Dua petugas survei di Kabupaten Bogor mendatangi lima rumah tangga yang berbeda pada minggu yang sama. Petugas pertama melaporkan rata-rata pengeluaran yang lebih tinggi daripada petugas kedua. Kepala seksi bertanya: siapa yang salah hitung? Keduanya benar. Mereka hanya mengambil sampel yang berbeda, dan rata-rata sampel memang berubah dari satu sampel ke sampel lain.
+
+Pertanyaannya, seberapa besar perubahan itu, dan apa yang membuatnya mengecil? Kita akan menjawabnya dengan menghitung rata-rata sampel dari data kecil, lalu melihat bagaimana variansnya bergantung pada ukuran sampel.
+
 ::: {.callout-tip appearance="simple"}
 ## Pertanyaan pemantik
 
@@ -28,3 +32,8 @@ Fungsi `mean()` menjumlahkan kelima nilai lalu membaginya dengan banyaknya nilai
 ## Jelaskan kembali
 
 Jelaskan kepada temanmu mengapa rata-rata dari banyak rumah tangga lebih stabil daripada pengeluaran satu rumah tangga.
+
+## Rangkuman
+
+- Rata-rata sampel meringkas pengamatan menjadi satu angka, dan nilainya berubah dari sampel ke sampel.
+- Variansnya $\sigma^2/n$ mengecil bila ukuran sampel $n$ membesar, sehingga laporan kedua petugas akan makin mirip bila sampelnya lebih besar.

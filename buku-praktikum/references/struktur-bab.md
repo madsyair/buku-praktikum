@@ -14,22 +14,22 @@ Urutan bab mengikuti cara pembaca membangun pemahaman, bukan urutan daftar isi b
 
 ### Buku teori atau buku ajar
 
-1. **Pembuka** — satu atau dua paragraf yang menghubungkan bab ini dengan bab sebelumnya dan menyodorkan masalah yang akan dijawab. Di sini gaya bercerita paling berguna: kasus nyata, pertanyaan yang biasa muncul di lapangan, atau kisah singkat lahirnya metode.
+1. **Pengantar yang menarik** (80–300 kata, sebelum judul subbab pertama) — studi kasus nyata (data atau peristiwa yang statusnya disebut) atau cerita pendek (tokoh, situasi, masalah) yang berakhir pada pertanyaan bab. Hubungkan dengan bab sebelumnya bila perlu. Kasus yang sama dipakai lagi di isi dan dijawab di rangkuman. Jangan membuka dengan "Bab ini membahas …" (G4).
 2. **Tujuan pembelajaran** — 3–5 butir yang dapat diukur ("menurunkan penduga kuadrat terkecil", bukan "memahami regresi").
-3. **Isi** — subbab yang masing-masing bergerak dari intuisi → definisi → rumus → penurunan (bila membantu) → contoh → catatan batasan atau asumsi.
-4. **Rangkuman** — beberapa kalimat yang menyatakan kembali gagasan inti dengan kata lain, bukan menyalin kalimat dari isi.
+3. **Isi** dalam **subbab ringkas** — satu konsep per subbab, paling banyak ±800 kata prosa per bagian (G4); masing-masing bergerak dari intuisi → definisi → rumus → penurunan (bila membantu) → contoh → catatan batasan atau asumsi.
+4. **Rangkuman** (wajib, `## Rangkuman`) — 3–7 butir atau 1–2 paragraf yang menyatakan kembali gagasan inti dengan kata lain, bukan menyalin kalimat dari isi, menjawab pertanyaan pengantar, tanpa sitasi.
 5. **Latihan** — bertingkat dari soal hitung, soal konsep, sampai soal penerapan dengan data.
 6. **Bacaan lanjut** — dua sampai lima rujukan dengan satu kalimat alasan untuk masing-masing.
 
 ### Modul praktikum
 
-1. **Pembuka dan tujuan praktikum.**
+1. **Pengantar yang menarik** (studi kasus nyata atau cerita pendek yang berakhir pada pertanyaan praktikum) **dan tujuan praktikum.**
 2. **Ringkasan teori** — cukup untuk mengerjakan praktikum, dengan rujukan ke bab teori atau buku acuan untuk pendalaman. Rumus kunci tetap ditulis lengkap.
 3. **Persiapan** — paket yang dibutuhkan, cara memasangnya, dataset dan cara memuatnya, serta versi perangkat lunak yang dipakai saat menulis.
 4. **Contoh terbimbing** — satu atau beberapa kasus yang dikerjakan langkah demi langkah. Setiap langkah mengikuti pola kode di `kode.md`. Bila memungkinkan, mulai dengan contoh kecil yang bisa dihitung manual, lalu cocokkan dengan keluaran perangkat lunak.
 5. **Tugas praktikum** — kasus serupa yang dikerjakan pembaca sendiri, dengan petunjuk secukupnya dan hasil yang dapat dicek (mis. "koefisien kemiringan seharusnya sekitar 0,8").
 6. **Pertanyaan diskusi** — tentang interpretasi, asumsi, dan apa yang terjadi bila asumsi dilanggar.
-7. **Rangkuman dan kesalahan umum** — galat yang sering muncul saat menjalankan kode atau menafsirkan hasil.
+7. **Rangkuman** (`## Rangkuman`, wajib) **dan kesalahan umum** — pesan utama praktikum dan galat yang sering muncul saat menjalankan kode atau menafsirkan hasil.
 
 Kotak khusus (*callout* di Quarto) dipakai hemat: **Catatan** untuk informasi tambahan, **Perhatian** untuk jebakan, **Tips** untuk jalan pintas praktis. Lebih dari dua kotak per subbab membuat bacaan terputus-putus.
 

@@ -2,7 +2,8 @@
 """Menjalankan gerbang mutu G0–G9 atas artefak di folder naskah/.
 
 Gerbang buku : G0 brief, G1 literatur, G2 rancangan, G9 perakitan
-Gerbang bab  : G3 kerangka, G4 draf, G5 kode, G6 rumus, G7 ulasan Sokratik–Feynman, G8 bahasa
+Gerbang bab  : G3 kerangka, G4 draf, G5 kode, G6 rumus, G7 ulasan Sokratik–Feynman, G8 bahasa,
+               GG gaya buku ajar (bila "tahap_gaya"), GK kunci jawaban (bila "kunci_jawaban")
 
 Contoh:
     python cek_gerbang.py --root .                     # semua gerbang yang artefaknya sudah ada
@@ -26,9 +27,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 BOOK_GATES = ["G0", "G1", "G2"]
-CHAPTER_GATES = ["G3", "G4", "G5", "G6", "G7", "G8"]
+CHAPTER_GATES = ["G3", "G4", "G5", "G6", "G7", "G8", "GG", "GK"]
 TITLES = {"G0": "Brief", "G1": "Literatur", "G2": "Rancangan", "G3": "Kerangka", "G4": "Draf",
-          "G5": "Kode", "G6": "Rumus", "G7": "Ulasan Sokratik–Feynman", "G8": "Bahasa", "G9": "Perakitan"}
+          "G5": "Kode", "G6": "Rumus", "G7": "Ulasan Sokratik–Feynman", "G8": "Bahasa", "G9": "Perakitan",
+          "GG": "Gaya buku ajar", "GK": "Kunci jawaban"}
 
 
 @dataclass
@@ -292,6 +294,69 @@ def g3(n: Path, b: str, cfg: dict) -> Gate:
     return g
 
 
+LARANGAN_BAWAAN = [r"\bsokrat\w*|\bsocrat\w*|\bsokrates\b|\bsocrates\b", r"\bfeynman\b"]
+POLA_ANGKA = [("desimal", r"(?<![\w.,])\d+,\d+(?![\w,])"),
+              ("persen", r"(?<![\w.,])\d+(?:,\d+)?\s?(?:%|persen\b)"),
+              ("ribuan", r"(?<![\w.,])\d{1,3}(?:\.\d{3})+(?![\w.])")]
+
+
+def prose_lines(text: str) -> list[tuple[int, str]]:
+    """Baris prosa (di luar blok kode, YAML, dan rumus tampilan) dengan nomornya."""
+    out, in_math = [], False
+    body = re.sub(r"<!--.*?-->", lambda m: "\n" * m.group(0).count("\n"), strip_code(text), flags=re.S)
+    lines = body.splitlines()
+    start = 0
+    if lines and lines[0].strip() == "---":
+        start = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), 0) + 1
+    for i in range(start, len(lines)):
+        l = lines[i]
+        if l.strip().startswith("$$"):
+            in_math = not (l.strip().count("$$") == 2) and not in_math
+            continue
+        if not in_math:
+            out.append((i + 1, l))
+    return out
+
+
+def clean_prose(l: str) -> str:
+    l = re.sub(r"<!--.*?-->", " ", l)
+    l = re.sub(r"`r [^`]*`", " ", l)
+    l = re.sub(r"`[^`]*`", " ", l)
+    l = re.sub(r"\$[^$]*\$", " ", l)
+    l = re.sub(r"\{[#.][^}]*\}", " ", l)
+    l = re.sub(r"\[@[^\]]*\]|@\w[\w:-]*", " ", l)
+    return l
+
+
+def structure_problems(text: str, cfg: dict) -> list[str]:
+    """Pengantar bab, subbab ringkas, rangkuman (diadaptasi dari skill buku-ajar, G-STRUKTUR)."""
+    sections, cur = [], ["(pengantar)", 0, []]
+    for no, l in prose_lines(text):
+        m = re.match(r"^(#{1,6})\s+(.*?)\s*(\{[^}]*\})?\s*$", l)
+        if m:
+            sections.append(cur)
+            cur = [m.group(2).strip(), len(m.group(1)), []]
+            continue
+        cur[2].append(clean_prose(l))
+    sections.append(cur)
+    words = lambda ls: len(re.findall(r"[A-Za-zÀ-ÿ][\w'-]*", re.sub(r":::[^\n]*", " ", "\n".join(ls))))
+    out = []
+    intro = words(sections[0][2])
+    # pengantar = prosa sebelum judul pertama (judul bab ada di YAML 'title')
+    if intro < int(cfg.get("pengantar_min_kata", 80)):
+        out.append(f"pengantar bab {intro} kata (< {cfg.get('pengantar_min_kata', 80)}); buka dengan studi kasus nyata atau cerita pendek")
+    first = " ".join(" ".join(sections[0][2]).split()[:4]).lower()
+    if re.match(r"^(bab|modul) ini\b|^(pada|dalam) (bab|modul) ini\b", first):
+        out.append("pengantar dibuka komentar meta ('Bab ini …')")
+    for title, lvl, ls in sections[1:]:
+        w = words(ls)
+        if w > int(cfg.get("subbab_maks_kata", 800)) and not re.match(r"(?i)(tugas|latihan|bacaan lanjut|lampiran)", title):
+            out.append(f"bagian '{title[:40]}' {w} kata (> {cfg.get('subbab_maks_kata', 800)}); pecah per konsep")
+    if not any(re.match(r"(?i)^(rangkuman|ringkasan)\b", s[0]) for s in sections if s[1] == 2):
+        out.append("tidak ada subbab '## Rangkuman' di akhir bab")
+    return out
+
+
 def g4(n: Path, b: str, cfg: dict) -> Gate:
     g = Gate("G4", f"bab {b}")
     path = n / "bab" / f"bab-{b}.qmd"
@@ -325,6 +390,31 @@ def g4(n: Path, b: str, cfg: dict) -> Gate:
         heads = {re.sub(r"\{.*?\}", "", h).strip().lower() for h in re.findall(r"^#{2,4}\s+(.*)$", text, flags=re.M)}
         missing = [s for s in subs if s and s.lower() not in heads and not s.startswith("<")]
         g.add("Setiap subbab di kerangka ada di naskah", not missing, "; ".join(missing[:6]))
+    # --- aturan yang diadaptasi dari skill buku-ajar (lihat references/kajian-adaptasi-buku-ajar.md)
+    prose = prose_lines(text)
+    larangan = cfg.get("larangan", LARANGAN_BAWAAN)
+    hit = [f"baris {no}: {m.group(0)}" for no, l in prose for pola in larangan
+           for m in re.finditer(pola, clean_prose(l), flags=re.I)]
+    g.add("Nama teknik pengajaran tidak ditulis di naskah", not hit, "; ".join(hit[:6]))
+    ask = [f"baris {no}" for no, l in prose if re.match(r"^#{1,6}\s", l) and "?" in re.sub(r"\{[^}]*\}\s*$", "", l)]
+    g.add("Subjudul berupa frasa, bukan kalimat tanya", not ask, ", ".join(ask[:6]))
+    eqcap = [f"baris {no}" for no, l in prose if re.search(r"(?:[^.!?\s#>*-])\s+Persamaan\b", clean_prose(l))]
+    g.add("Kata 'persamaan' huruf kecil di tengah kalimat", not eqcap, ", ".join(eqcap[:6]))
+    salah = [f"baris {no}: '{m.group(0)}' → {d.get('saran', '')}" for no, l in prose for d in cfg.get("istilah_terlarang", [])
+             for m in re.finditer(d["pola"], clean_prose(l), flags=re.I)]
+    g.add("Istilah yang sudah diputuskan (istilah_terlarang di gerbang.json)", not salah, "; ".join(salah[:6]))
+    if cfg.get("periksa_struktur", True):
+        sp = structure_problems(text, cfg)
+        g.add("Struktur bab: pengantar menarik, subbab ringkas, rangkuman", not sp, "; ".join(sp[:6]))
+    if cfg.get("angka_inline"):
+        izin = set(cfg.get("angka_tetap", []))
+        typed = [f"baris {no}: {j} '{m.group(0).strip()}'" for no, l in prose for j, pola in POLA_ANGKA
+                 for m in re.finditer(pola, clean_prose(l)) if m.group(0).strip() not in izin]
+        g.add("Angka hasil hitung di prosa berasal dari kode inline (`r ...`)", not typed, "; ".join(typed[:8]))
+    if cfg.get("lebar_kode_maks"):
+        wide = [f"baris {i + 1}" for s, e, lang, _ in blocks for i in range(s + 1, e)
+                if len(lines[i]) > int(cfg["lebar_kode_maks"]) and not lines[i].lstrip().startswith("#|")]
+        g.add(f"Baris kode ≤ {cfg['lebar_kode_maks']} karakter", not wide, ", ".join(wide[:8]))
     rows = brief_rows(read(n / "00-brief.md"))
     if rows.get("fitur belajar", "").lower().startswith("ya"):
         plain = strip_code(text).lower()
@@ -354,6 +444,16 @@ def g5(n: Path, b: str, cfg: dict, skip: bool) -> Gate:
 
 def g6(n: Path, b: str, cfg: dict, skip: bool) -> Gate:
     g = Gate("G6", f"bab {b}")
+    bab = n / "bab" / f"bab-{b}.qmd"
+    if bab.exists():
+        sys.path.insert(0, str(HERE))
+        import cek_rumus
+        temuan, _ = cek_rumus.periksa([bab], "id", cfg.get("rumus_abaikan", []))
+        err = [t for t in temuan if t["tingkat"] == "ERROR"]
+        war = [t for t in temuan if t["tingkat"] != "ERROR"]
+        fmt = lambda t: f"baris {t['baris']} {t['kode']}: {t['temuan']}"
+        g.add(f"cek_rumus.py: tidak ada ERROR penulisan rumus ({len(war)} WARNING untuk A7, lihat references/rumus-dan-simbol.md)",
+              not err, "; ".join(fmt(t) for t in (err or war)[:6]))
     files = sorted((n / "turunan").glob(f"bab-{b}-*.txt"))
     if not files:
         g.add("Tidak ada penurunan yang perlu diperiksa", True, "tidak ada berkas turunan untuk bab ini")
@@ -418,6 +518,92 @@ def g8(n: Path, b: str, cfg: dict, skip: bool) -> Gate:
     return g
 
 
+def sentences(par: str) -> list[str]:
+    par = re.sub(r"\b(dll|dsb|dst|dkk|hlm|No|Dr|dr|Prof|Jl|S\.\w+|M\.\w+)\.", r"\1§", par)
+    return [s for s in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"(*])", par.strip()) if s.strip()]
+
+
+def gg(n: Path, b: str, cfg: dict) -> Gate:
+    """Tahap gaya buku ajar (diadaptasi dari buku-ajar, references/gaya-buku-ajar.md)."""
+    g = Gate("GG", f"bab {b}")
+    if not cfg.get("tahap_gaya"):
+        g.add("Tahap gaya tidak diaktifkan (tahap_gaya di gerbang.json)", True)
+        return g
+    text = read(n / "bab" / f"bab-{b}.qmd")
+    if not text:
+        g.skipped = f"bab/bab-{b}.qmd belum ada"
+        return g
+    rev = read(n / "ulasan" / f"gaya-bab-{b}.md")
+    rev_isi = re.sub(r"<!--.*?-->", "", rev, flags=re.S)
+    g.add("Telaah gaya A12 ada dan ditindaklanjuti A13 (## Tindak lanjut)",
+          bool(re.search(r"^##\s+Tindak lanjut", rev_isi, flags=re.M)),
+          "" if rev else f"ulasan/gaya-bab-{b}.md belum ada")
+    body, skip, cites = [], False, 0
+    for _, l in prose_lines(text):
+        h = re.match(r"^#{1,6}\s+(.*)$", l)
+        if h:
+            skip = bool(re.match(r"(?i)(bacaan lanjut|tugas|latihan|pertanyaan diskusi|jelaskan kembali)", h.group(1)))
+            continue
+        if skip or l.lstrip().startswith((":::", "|")):
+            continue
+        cites += len(re.findall(r"\[@[^\]]*\]", l)) + len(re.findall(r"(?<![\[\w`])@(?!fig-|tbl-|eq-|sec-)\w[\w:-]*", l))
+        body.append(clean_prose(l))
+    plain = "\n".join(body)
+    words = len(re.findall(r"[A-Za-zÀ-ÿ][\w'-]*", plain)) or 1
+    sents = [len(re.findall(r"[A-Za-zÀ-ÿ0-9][\w'-]*", s)) for p in re.split(r"\n\s*\n", plain) for s in sentences(" ".join(p.split()))]
+    sents = [x for x in sents if x >= 3]
+    mode = cfg.get("sapaan", "kita")
+    pola = {"kita": r"\b[Kk]ita\b", "Anda": r"\bAnda\b"}.get(mode, r"\bAnda\b|\b[Kk]ita\b")
+    per = 1000 * len(re.findall(pola, plain)) / words
+    g.add(f"Sapaan {mode} ≥ {cfg.get('sapaan_per_1000_kata_min', 3)} per 1.000 kata", per >= cfg.get("sapaan_per_1000_kata_min", 3), f"{per:.1f}")
+    if mode == "kita":
+        anda = len(re.findall(r"\bAnda\b", plain))
+        g.add("Tanpa 'Anda' di prosa (sapaan buku: kita)", anda == 0, f"{anda}×" if anda else "")
+    if sents:
+        mean = sum(sents) / len(sents)
+        g.add(f"Rata-rata kalimat ≤ {cfg.get('rerata_kata_kalimat_maks', 20)} kata", mean <= cfg.get("rerata_kata_kalimat_maks", 20), f"{mean:.1f}")
+    dens = 1000 * cites / words
+    g.add(f"Sitasi ≤ {cfg.get('sitasi_per_1000_kata_maks', 4)} per 1.000 kata prosa isi (sisanya di Bacaan lanjut)",
+          dens <= cfg.get("sitasi_per_1000_kata_maks", 4), f"{dens:.1f}")
+    return g
+
+
+def gk(n: Path, b: str, cfg: dict) -> Gate:
+    """Kunci jawaban berubrik untuk tugas praktikum (diadaptasi dari buku-ajar, references/kunci-jawaban.md)."""
+    g = Gate("GK", f"bab {b}")
+    if not cfg.get("kunci_jawaban"):
+        g.add("Kunci jawaban tidak diaktifkan (kunci_jawaban di gerbang.json)", True)
+        return g
+    bab = read(n / "bab" / f"bab-{b}.qmd")
+    kunci = read(n / "kunci" / f"bab-{b}.qmd")
+    if not bab or not kunci:
+        g.skipped = f"bab/bab-{b}.qmd atau kunci/bab-{b}.qmd belum ada"
+        return g
+    sec = re.search(r"^##\s+(Tugas praktikum|Latihan)\b.*?$(.*?)(?=^##\s|\Z)", strip_code(bab), flags=re.M | re.S | re.I)
+    n_tugas = len(re.findall(r"^\s*\d+\.\s", sec.group(2), flags=re.M)) if sec else 0
+    items = re.split(r"^###\s+(?:Tugas|Latihan)\s+(\d+)\b.*$", kunci, flags=re.M)
+    blocks = {items[i]: items[i + 1] for i in range(1, len(items) - 1, 2)}
+    g.add(f"Setiap tugas di bab punya kunci ({n_tugas} tugas, {len(blocks)} kunci)", n_tugas > 0 and len(blocks) == n_tugas,
+          "" if sec else "subbab '## Tugas praktikum' tidak ditemukan di bab")
+    no_ans = [k for k, v in blocks.items() if not re.search(r"^>\s*\*\*Jawaban akhir:\*\*", v, flags=re.M)]
+    g.add("Setiap kunci memuat '> **Jawaban akhir:**'", not no_ans, "tugas " + ", ".join(no_ans) if no_ans else "")
+    bad = []
+    for k, v in blocks.items():
+        m = re.search(r"skor\s*(?:<-|=)\s*c\(([^)]*)\)", v)
+        if m:
+            total = sum(float(x) for x in re.findall(r"-?\d+(?:\.\d+)?", m.group(1)))
+        else:
+            rows = [r for r in v.splitlines() if r.startswith("|") and not r.startswith("|-") and not re.search(r"(?i)\|\s*skor\s*\|", r)]
+            total = sum(float(c.strip()) for r in rows for c in [r.strip().strip("|").split("|")[-1]] if re.fullmatch(r"\s*\d+(\.\d+)?\s*", c))
+        if abs(total - 10) > 1e-9:
+            bad.append(f"tugas {k}: {total:g}")
+    g.add("Rubrik setiap tugas berjumlah 10 poin", not bad, "; ".join(bad))
+    temuan = read(n / "kunci" / "temuan-soal.md")
+    terbuka = [l.strip()[:60] for l in temuan.splitlines() if l.startswith("|") and f"| {int(b)} |" in l and "Diterapkan" not in l and "Diputuskan" not in l]
+    g.add("Temuan soal bab ini sudah Diterapkan/Diputuskan", not terbuka, "; ".join(terbuka[:3]))
+    return g
+
+
 def g9(n: Path, cfg: dict, chapter_results: dict) -> Gate:
     g = Gate("G9", "buku")
     chs = list(chapters(read(n / "02-rancangan.md")))
@@ -425,7 +611,11 @@ def g9(n: Path, cfg: dict, chapter_results: dict) -> Gate:
     for c in chs:
         res = chapter_results.get(c, {})
         failed = [k for k in CHAPTER_GATES if k not in res or not res[k].passed]
-        g.add(f"Bab {c} lolos G3–G8", not failed, "belum: " + ", ".join(failed) if failed else "")
+        g.add(f"Bab {c} lolos G3–G8, GG, GK", not failed, "belum: " + ", ".join(failed) if failed else "")
+    if cfg.get("terbit"):
+        ed = read(n / "ulasan" / "editor-penerbitan.md")
+        ok = bool(re.search(r"Keputusan:\s*\**\s*siap terbit", ed, flags=re.I))
+        g.add("Editor penerbitan (A14) memutuskan siap terbit (terbit: true)", ok, "" if ed else "ulasan/editor-penerbitan.md belum ada")
     fmt = brief_rows(read(n / "00-brief.md")).get("format keluaran", "").lower()
     if "quarto" in fmt or not fmt:
         g.add("_quarto.yml ada", (n / "_quarto.yml").exists())
@@ -484,6 +674,10 @@ def main() -> int:
                 r = g6(n, b, cfg, a.lewati_perintah)
             elif gname == "G7":
                 r = g7(n, b, cfg)
+            elif gname == "GG":
+                r = gg(n, b, cfg)
+            elif gname == "GK":
+                r = gk(n, b, cfg)
             else:
                 r = g8(n, b, cfg, a.lewati_perintah)
             chapter_results[b][gname] = r

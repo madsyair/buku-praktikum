@@ -33,7 +33,9 @@ Rata-rata pengeluaran sekitar ... ribu rupiah per kapita per bulan, sama dengan 
 manual. Simpangan baku ... ribu rupiah menunjukkan bahwa ...
 ````
 
-Angka di bagian interpretasi ditulis setelah kode dijalankan dan diambil dari keluaran asli, lalu ditulis dalam format angka Indonesia (koma desimal).
+Angka di bagian interpretasi diambil dari keluaran asli dan ditulis dalam format angka Indonesia (koma desimal). Di Quarto, tulis angka itu dengan **kode inline** agar tidak pernah berbeda dari keluarannya, misalnya `` `r format(round(mean(pengeluaran), 1), decimal.mark = ",")` ``. Buat fungsi pembantu sekali di chunk setup (`angka <- function(x, d = 1) formatC(x, format = "f", digits = d, decimal.mark = ",", big.mark = ".")`). Gerbang G4 menolak angka desimal, persen, dan ribuan yang diketik di prosa bila `angka_inline` aktif; angka tetap yang memang bukan hasil hitung (mis. tahun survei) didaftarkan di `angka_tetap`.
+
+**Status data** selalu disebut saat data diperkenalkan: data riil (sumber, tahun, lisensi), data sintetis bawaan paket, atau data simulasi buku ini (parameter sebenarnya diketahui). Batasan data ditulis di prakata.
 
 ## Lingkungan dan reprodusibilitas
 

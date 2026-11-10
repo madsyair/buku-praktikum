@@ -1,0 +1,36 @@
+# Kunci Jawaban: <judul bab> {.unnumbered}
+
+<!-- Kunci untuk pengajar. Nomor tugas sama dengan subbab "Tugas praktikum" di bab. Sapaan sama dengan bab. -->
+
+```{r}
+#| label: persiapan-kunci
+#| include: false
+set.seed(2026)
+# Bangun ulang data dan objek yang dipakai tugas di sini; jangan source() berkas bab.
+rubrik <- function(unsur, skor) {
+  stopifnot(length(unsur) == length(skor), sum(skor) == 10)
+  knitr::kable(data.frame(Unsur = unsur, Skor = skor))
+}
+```
+
+### Tugas 1
+
+**Ringkasan soal.** ...
+
+**Pembahasan.**
+
+1. ...
+2. ...
+
+> **Jawaban akhir:** ...
+
+**Pedoman penilaian.** Skor diberikan menurut tabel berikut.
+
+```{r}
+#| echo: false
+skor <- c(4, 4, 2)
+stopifnot(sum(skor) == 10)
+rubrik(c("Langkah hitung benar", "Keluaran dibaca benar", "Interpretasi dalam konteks"), skor)
+```
+
+*Kesalahan umum*: ... (−2). *Contoh jawaban sebagian*: ... (6 poin). *Variasi lain yang benar*: ...

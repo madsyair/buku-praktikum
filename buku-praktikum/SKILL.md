@@ -19,7 +19,9 @@ Rinciannya di `references/pedagogi-sokratik-feynman.md`. Intinya, pertanyaan Sok
 
 - **Penulis**: konsep inti harus bisa dijelaskan dalam lima kalimat sederhana sebelum bab dirancang (A2, A3); bila tidak bisa, literaturnya belum cukup.
 - **Naskah**: bab disusun sebagai peta pertanyaan (A3), dan setiap paragraf menjawab satu pertanyaan yang lahir dari paragraf sebelumnya (A4). Inilah mesin utama narasi yang mengalir.
-- **Pembaca**: pertanyaan pemantik, pertanyaan Sokratik setelah keluaran kode, latihan *jelaskan kembali*, dan miskonsepsi umum (A5); naskah diuji oleh pembaca simulasi berkonteks bersih (A8).
+- **Pembaca**: pertanyaan pemantik, pertanyaan untuk direnungkan setelah keluaran kode, latihan *jelaskan kembali*, dan miskonsepsi umum (A5); naskah diuji oleh pembaca simulasi berkonteks bersih (A8).
+
+**Label internal.** "Sokratik" dan "Feynman" adalah nama kerja skill. Nama itu tidak pernah ditulis di naskah buku (judul, subjudul, kotak, latihan); tekniknya bekerja tanpa label. Gerbang G4 menolaknya (`larangan` di `gerbang.json`).
 
 ## Agen dan kontraknya
 
@@ -39,8 +41,13 @@ Setiap agen punya berkas instruksi di `agents/`. Baca berkas agen sebelum menjal
 | A8 Pembaca Sokratik–Feynman | `agents/a8-pembaca-sokratik-feynman.md` | `ulasan/bab-XX.md` | G7 |
 | A9 Penyunting Bahasa | `agents/a9-penyunting-bahasa.md` | bab tersunting, `laporan/bahasa-bab-XX.md` | G8 |
 | A10 Perakit | `agents/a10-perakit.md` | proyek buku dan hasil render | G9 |
+| A11 Pembuat Kunci *(bila `kunci_jawaban`)* | `agents/a11-pembuat-kunci.md` | `kunci/bab-XX.qmd`, `kunci/temuan-soal.md` | GK |
+| A11v Pemeriksa Kunci | `agents/a11v-pemeriksa-kunci.md` | `ulasan/kunci-bab-XX.md` | GK |
+| A12 Penyunting Gaya Buku Ajar *(bila `tahap_gaya`)* | `agents/a12-penyunting-gaya.md` | `gaya/bab-XX.qmd`, `ulasan/gaya-bab-XX.md` | GG |
+| A13 Penerap Revisi Gaya | `agents/a13-penerap-revisi-gaya.md` | bab hasil penerapan, `## Tindak lanjut` | GG |
+| A14 Editor Penerbitan *(bila `terbit`)* | `agents/a14-editor-penerbitan.md` | `ulasan/editor-penerbitan.md` | G9 |
 
-**Pemisahan peran disengaja.** A2v dan A8 bekerja dengan **konteks bersih**: mereka hanya membaca artefak dari berkas, tidak melihat penalaran agen yang membuatnya, supaya pekerjaan tidak menilai dirinya sendiri. Bila alat subagen (Agent/Task) tersedia, jalankan setiap agen sebagai subagen, dan A2v serta A8 selalu sebagai subagen baru. Bila tidak tersedia, jalankan peran secara berurutan dalam satu konteks, baca ulang artefak dari berkas untuk A2v dan A8, lalu sebutkan kepada pengguna bahwa ulasan dilakukan tanpa isolasi konteks.
+**Pemisahan peran disengaja.** A2v, A8, A11v, A12, dan A14 bekerja dengan **konteks bersih**: mereka hanya membaca artefak dari berkas, tidak melihat penalaran agen yang membuatnya, supaya pekerjaan tidak menilai dirinya sendiri. Bila alat subagen (Agent/Task) tersedia, jalankan setiap agen sebagai subagen, dan agen berkonteks bersih selalu sebagai subagen baru. A13 harus agen yang berbeda dari A12, dan A11v berbeda dari A11. Bila tidak tersedia, jalankan peran secara berurutan dalam satu konteks, baca ulang artefak dari berkas untuk A2v dan A8, lalu sebutkan kepada pengguna bahwa ulasan dilakukan tanpa isolasi konteks.
 
 ## Mode
 
@@ -48,7 +55,7 @@ Pilih mode di awal agar biaya proses sepadan dengan pekerjaannya, lalu catat di 
 
 | Mode | Kapan | Agen |
 |---|---|---|
-| `buku` | Buku atau modul baru | A1–A10 |
+| `buku` | Buku atau modul baru | A1–A10; A12–A13 bila `tahap_gaya` (dianjurkan); A11 bila `kunci_jawaban`; A14 bila `terbit` |
 | `bab` | Menambah satu bab ke buku yang ada | A3 (delta), A4–A9 |
 | `sunting` | Memperbaiki naskah yang sudah ada | A6, A7, A8, A9, dan A2v untuk klaim yang diragukan |
 | `audit` | Memeriksa buku jadi tanpa mengubahnya | A2v, A6, A7, A8, A9; hasilnya laporan temuan |
@@ -59,11 +66,20 @@ Untuk permintaan sangat kecil (satu paragraf, satu contoh kode), tidak perlu har
 
 ```
 Fase buku : A1 ─G0→ A2 ⇄ A2v ─G1→ A3 ─G2→ [persetujuan pengguna]
-Fase bab  : A4 ─G3→ A5 ─G4→ A6 ⇄ A5 ─G5→ A7 ⇄ A5 ─G6→ A8 ⇄ A5 (⇄ A2) ─G7→ A9 ─G8→ bab berikutnya
-Fase rakit: A10 ─G9→ buku
+Fase bab  : A4 ─G3→ A5 ─G4→ A6 ⇄ A5 ─G5→ A7 ⇄ A5 ─G6→ A8 ⇄ A5 (⇄ A2) ─G7→ A9 ─G8→
+            [A12 → A13 ─GG→]  [A11 ⇄ A11v ─GK→]  bab berikutnya
+Fase rakit: A10 → [A14] ─G9→ buku
 ```
 
 Untuk buku panjang, tunjukkan kerangka bab pertama kepada pengguna sebelum A5 menulis, agar gaya dan kedalaman disepakati lebih awal.
+
+Tahap dalam kurung siku bersifat pilihan dan diaktifkan di `gerbang.json`:
+
+- `"tahap_gaya": true`: setelah G8, A12 menulis ulang bab ke gaya buku ajar (sapaan *kita*, semi-formal, istilah dijelaskan, sitasi seperlunya ke *Bacaan lanjut*) dan A13 memeriksa lalu menerapkannya (`references/gaya-buku-ajar.md`).
+- `"kunci_jawaban": true`: A11 menulis kunci berubrik untuk setiap tugas praktikum dan A11v memeriksanya secara mandiri (`references/kunci-jawaban.md`).
+- `"terbit": true`: A14 menelaah buku utuh sebelum G9 (`agents/a14-editor-penerbitan.md`).
+
+**Keputusan penulis** (istilah, sapaan, notasi) dicatat di `naskah/KEPUTUSAN.md`. Keputusan yang dapat diperiksa mesin ditambahkan ke `gerbang.json` (mis. `istilah_terlarang`) disertai satu uji, lalu A0 mengaudit ulang bab yang sudah lolos.
 
 ## Harness: state, gerbang, dan loop
 
@@ -90,12 +106,14 @@ Skrip memeriksa artefak dan menjalankan pemeriksa kode, rumus, EYD, dan istilah,
 | G1 Literatur | Ada pustaka dan klaim; tidak ada klaim `DIUSULKAN` tersisa; setiap bab punya sumber utama di pustaka |
 | G2 Rancangan | Setiap bab punya pertanyaan pemandu, penjelasan Feynman, minimal tiga tujuan, subbab, dan sumber; notasi dan glosarium ditetapkan; persetujuan pengguna dicatat |
 | G3 Kerangka | Setiap paragraf punya pertanyaan, fungsi, gagasan pokok, dan transisi; setiap subbab punya penjelasan Feynman; ID klaim yang dirujuk terverifikasi |
-| G4 Draf | Sitasi ada di pustaka; setiap blok kode diikuti penjelasan; subbab kerangka ada di naskah; tidak ada penanda `[[...]]`; fitur belajar ada bila diaktifkan |
+| G4 Draf | Sitasi ada di pustaka; istilah yang sudah diputuskan (`istilah_terlarang`) tidak muncul; setiap blok kode diikuti penjelasan; subbab kerangka ada di naskah; tidak ada penanda `[[...]]`; fitur belajar ada bila diaktifkan; tanpa nama teknik pengajaran; subjudul bukan kalimat tanya; *persamaan* huruf kecil di tengah kalimat; **struktur bab** (pengantar berupa studi kasus/cerita ≥ `pengantar_min_kata`, subbab ≤ `subbab_maks_kata`, `## Rangkuman`); bila diaktifkan di `gerbang.json`: angka hasil hitung dari kode inline (`angka_inline`), lebar baris kode (`lebar_kode_maks`) |
 | G5 Kode | `jalankan_kode.py` keluar 0 |
-| G6 Rumus | `cek_turunan.py` keluar 0; langkah manual dan numerik punya catatan pemeriksaan |
+| G6 Rumus | `cek_rumus.py` tanpa ERROR (penulisan rumus dan simbol; WARNING untuk A7); `cek_turunan.py` keluar 0; langkah manual dan numerik punya catatan pemeriksaan |
 | G7 Ulasan | Putusan terakhir A8 `LOLOS`; tidak ada temuan mayor terbuka |
 | G8 Bahasa | Pemeriksa EYD 0 ERROR; `cek_istilah.py` keluar 0; laporan bahasa ada |
-| G9 Perakitan | Semua bab lolos G3–G8; berkas proyek lengkap |
+| GG Gaya buku ajar *(bila `tahap_gaya`)* | Telaah A12 ada dan berisi `## Tindak lanjut` dari A13; sapaan *kita* ≥ 3 per 1.000 kata, tanpa *Anda*; rata-rata kalimat ≤ 20 kata; sitasi ≤ 4 per 1.000 kata prosa isi |
+| GK Kunci jawaban *(bila `kunci_jawaban`)* | Setiap butir `## Tugas praktikum` punya `### Tugas N` di kunci; setiap kunci memuat `> **Jawaban akhir:**`; rubrik berjumlah 10; tidak ada temuan soal terbuka untuk bab ini |
+| G9 Perakitan | Semua bab lolos G3–G8 (dan GG, GK bila aktif); berkas proyek lengkap; bila `terbit`, A14 memutuskan *siap terbit* |
 
 **Loop** yang dikendalikan A0 (rincian dan anggaran di `agents/a0-orkestrator.md`):
 
@@ -104,7 +122,11 @@ Skrip memeriksa artefak dan menjalankan pemeriksa kode, rumus, EYD, dan istilah,
 - **Rumus** (A7 ⇄ A5, maks. 3): periksa simbolik/numerik → perbaiki langkah → periksa ulang.
 - **Sokratik–Feynman** (A8 ⇄ A5, maks. 3): uji penjelasan ulang dan pertanyaan Sokratik → tutup celah → ulas ulang; celah yang berupa kekurangan sumber diteruskan ke A2.
 - **Bahasa** (A9, maks. 4): loop `periksa.py` EYD sampai 0 ERROR, lalu pemeriksa istilah dan `humanizer-id`.
-- **Bab** (A0): setelah G3–G8 lolos untuk satu bab, lanjut ke bab berikutnya.
+- **Gaya** (A12 → A13, maks. 4 putaran penerapan): telaah dan tulis ulang → periksa dan terapkan → G4–G8 dan GG.
+- **Kunci** (A11 ⇄ A11v, maks. 3): tulis kunci → hitung ulang mandiri → perbaiki; temuan soal kembali ke A5.
+- **Penerbitan** (A14 → A13/A9 → A10, maks. 2): telaah buku utuh → perbaikan mekanis → render ulang.
+- **Keputusan** (A0): keputusan baru → `KEPUTUSAN.md` + `gerbang.json` + uji → audit ulang semua bab yang sudah lolos.
+- **Bab** (A0): setelah G3–G8 (dan GG, GK bila aktif) lolos untuk satu bab, lanjut ke bab berikutnya.
 
 Setiap putaran dicatat di `STATE.md`. Jika anggaran putaran habis, perbaikan terus membuka temuan baru, atau ada keputusan yang tidak dapat dibatalkan dan masuk akal ke dua arah, berhenti dan tanyakan pengguna. Perubahan pada bab yang sudah lolos membuka kembali gerbang yang terdampak.
 
@@ -118,17 +140,23 @@ Setiap putaran dicatat di `STATE.md`. Jika anggaran putaran habis, perbaikan ter
 | `references/gaya-narasi.md` | Narasi mengalir, koherensi, gaya bercerita, register akademik yang mudah dipahami | A4, A5, A9 |
 | `references/istilah.md` | Kebijakan istilah (padanan KBBI selektif, serapan, istilah asing) dan istilah khas bidang | A3, A5, A9 |
 | `references/kode.md` | Pola contoh kode, lingkungan dan reprodusibilitas, interpretasi keluaran | A5, A6 |
-| `references/rumus.md` | Penulisan rumus, penurunan langkah demi langkah, format berkas turunan | A5, A7 |
+| `references/rumus.md` | Penurunan langkah demi langkah, format berkas turunan, verifikasi | A5, A7 |
+| `references/rumus-dan-simbol.md` | Rumus sebagai bagian kalimat, tipografi ISO 80000-2, pemenggalan rumus, keterangan dan konsistensi simbol (R1–R12) | A3, A5, A7, A9 |
+| `references/gaya-buku-ajar.md` | Tahap gaya akhir: sapaan *kita*, semi-formal, istilah, rujukan seperlunya, ukuran GG | A12, A13, A14 |
+| `references/kunci-jawaban.md` | Kunci berubrik, temuan soal, pemeriksaan independen, GK | A11, A11v |
+| `references/pelajaran-proyek.md` | Kesalahan berulang dari proyek buku ajar dan pencegahannya | A4, A5, A6, A7, A8, A11v |
+| `references/kajian-adaptasi-buku-ajar.md` | Kajian bagian skill buku-ajar yang diadaptasi ke skill ini (diterapkan dan diusulkan) | A0, pemelihara skill |
 
-Templat ada di `assets/` (brief, literatur, rancangan, kerangka bab, bab Quarto, ulasan, STATE, `_quarto.yml`, `glosarium.csv`).
+Templat ada di `assets/` (brief, literatur, rancangan, kerangka bab, bab Quarto, ulasan, ulasan gaya, kunci bab, temuan soal, KEPUTUSAN, STATE, `_quarto.yml`, `glosarium.csv`).
 
 ## Skrip
 
 | Skrip | Fungsi |
 |---|---|
 | `scripts/init_naskah.py` | Menyiapkan folder kerja dan berkas per bab |
-| `scripts/cek_gerbang.py` | Menjalankan gerbang G0–G9 |
+| `scripts/cek_gerbang.py` | Menjalankan gerbang G0–G9, GG, dan GK |
 | `scripts/jalankan_kode.py` | Menjalankan blok R/Python/Julia berurutan per sesi, mencatat versi, galat, dan peringatan |
+| `scripts/cek_rumus.py` | Memeriksa penulisan rumus dan simbol: kalimat diawali lambang, simbol tanpa keterangan, arti ganda, pemenggalan rumus, operator miring (dipanggil G6) |
 | `scripts/cek_turunan.py` | Memeriksa setiap langkah penurunan dengan SymPy: simbolik, titik acak, dan titik pembantah |
 | `scripts/cek_istilah.py` | Memeriksa konsistensi istilah, padanan pada kemunculan pertama, dan huruf miring istilah asing |
 

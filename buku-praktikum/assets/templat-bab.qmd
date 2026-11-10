@@ -5,11 +5,14 @@ title: "Judul Bab"
 <!--
 Templat bab modul praktikum. Hapus bagian yang tidak dipakai.
 Pola contoh kode: pengantar → kode → penjelasan kode → keluaran asli → interpretasi.
-Fitur belajar (bila aktif di brief): pertanyaan pemantik, pertanyaan Sokratik, jelaskan kembali, miskonsepsi umum.
+Fitur belajar (bila aktif di brief): pertanyaan pemantik, pertanyaan untuk direnungkan, jelaskan kembali, miskonsepsi umum.
+Nama teknik pengajaran (label internal skill) tidak pernah ditulis di naskah; gerbang G4 menolaknya.
+Rumus dan simbol mengikuti references/rumus-dan-simbol.md (gerbang G6).
 -->
 
-Paragraf pembuka: kaitkan dengan bab sebelumnya dan sodorkan masalah yang akan dijawab bab ini.
-Bila cocok, mulai dengan kasus nyata atau pertanyaan yang sering muncul di lapangan.
+Pengantar bab (80–300 kata) berupa studi kasus nyata atau cerita pendek: data atau peristiwa di lapangan yang statusnya disebut, atau tokoh yang menghadapi masalah. Tulis seolah kita bercerita kepada mahasiswa, dengan kalimat pendek dan sapaan *kita*.
+
+Kaitkan dengan bab sebelumnya bila perlu, lalu akhiri pengantar dengan pertanyaan yang akan kita jawab di bab ini. Jangan membuka dengan "Bab ini membahas …". Kasus yang sama dipakai lagi di contoh terbimbing dan dijawab di rangkuman.
 
 ::: {.callout-note appearance="simple"}
 ## Tujuan pembelajaran
@@ -33,7 +36,6 @@ Intuisi lebih dulu, lalu definisi dan rumus.
 $$
 \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
 $$ {#eq-rata-rata}
-
 dengan $n$ menyatakan ukuran sampel dan $x_i$ nilai amatan ke-$i$ [@kunci, hlm. ...].
 
 ### Penurunan (bila membantu pemahaman)
@@ -69,10 +71,10 @@ Pengantar: apa yang akan dikerjakan dan mengapa.
 
 Penjelasan kode: fungsi, argumen penting, dan bawaan yang memengaruhi hasil.
 
-Interpretasi keluaran: makna angka dalam konteks masalah, ketidakpastiannya, dan batasan kesimpulan.
+Interpretasi keluaran: makna angka dalam konteks masalah, ketidakpastiannya, dan batasan kesimpulan. Angka hasil hitung ditulis dengan kode inline, misalnya `` `r round(mean(x), 1)` ``, bukan diketik.
 
 ::: {.callout-note appearance="simple"}
-## Pertanyaan Sokratik
+## Pertanyaan untuk direnungkan
 
 - Apa yang terjadi pada hasil di atas bila ... (akibat)?
 - Asumsi mana yang paling mungkin dilanggar pada data ini (asumsi)?

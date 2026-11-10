@@ -228,3 +228,156 @@ def test_gerbang_menangkap_kesalahan(tmp_path):
     for g in ("G1 GAGAL", "G3 GAGAL", "G4 GAGAL", "G6 GAGAL", "G7 GAGAL", "G8 GAGAL"):
         assert g in p.stdout, g
     assert "fiktif2020" in p.stdout
+
+
+# ------------------------------------------------------------------ adaptasi dari buku-ajar
+def test_cek_rumus_menolak_dan_meloloskan(tmp_path):
+    buruk = tmp_path / "buruk.qmd"
+    buruk.write_text("$\\beta$ diestimasi dengan kuadrat terkecil.\n", encoding="utf-8")
+    p = run("cek_rumus.py", buruk, "--json")
+    assert p.returncode == 1
+    assert any(t["kode"] == "R1" for t in json.loads(p.stdout)["temuan"])
+    baik = tmp_path / "baik.qmd"
+    baik.write_text("Rata-rata sampel didefinisikan sebagai\n$$\n\\bar x = \\frac{1}{n}\\sum_{i=1}^{n} x_i,\n$$\n"
+                    "dengan $n$ menyatakan ukuran sampel dan $x_i$ menyatakan nilai amatan ke-$i$.\n", encoding="utf-8")
+    p = run("cek_rumus.py", baik, "--json")
+    assert p.returncode == 0, p.stdout
+    assert json.loads(p.stdout)["warning"] == 0, p.stdout
+
+
+def test_gerbang_g4_aturan_adaptasi(tmp_path):
+    proj = tmp_path / "p"
+    shutil.copytree(FIXTURE, proj)
+    cfg_path = proj / "naskah" / "harness" / "gerbang.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg.update({"angka_inline": True, "lebar_kode_maks": 40})
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+    bab = proj / "naskah" / "bab" / "bab-01.qmd"
+    t = bab.read_text(encoding="utf-8")
+    t = t.replace("## Rata-rata sampel", "## Apa itu rata-rata sampel?")
+    t = t.replace("## Rangkuman", "## Pertanyaan Sokratik")
+    t = t.replace("Akibatnya, rata-rata", "Seperti pada Persamaan (1), rata-rata")
+    t = t.replace("x <- c(812, 945, 1020, 760, 1105)", "x <- c(812, 945, 1020, 760, 1105, 999, 888, 777)")
+    bab.write_text(t, encoding="utf-8")
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "G4")
+    assert p.returncode != 0
+    for frasa in ("Nama teknik pengajaran", "bukan kalimat tanya", "'persamaan' huruf kecil",
+                  "Struktur bab", "kode inline", "Baris kode"):
+        assert frasa in p.stdout, (frasa, p.stdout)
+
+
+# ------------------------------------------------------------------ U1, U2, U4, U5 (0.3.0)
+def _set_cfg(proj: Path, **kw) -> None:
+    cfg_path = proj / "naskah" / "harness" / "gerbang.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg.update(kw)
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+
+
+KUNCI_BAIK = """# Kunci jawaban Bab 1
+
+### Tugas 1
+
+**Ringkasan soal.** Hitung rata-rata sampel.
+
+**Pembahasan.** Jumlahkan lalu bagi dengan $n$.
+
+> **Jawaban akhir:** rata-rata sampel 928,4.
+
+| Kriteria | Skor |
+|---|---|
+| Langkah benar | 6 |
+| Interpretasi | 4 |
+
+### Tugas 2
+
+**Pembahasan.** Bandingkan dua sampel.
+
+> **Jawaban akhir:** rata-rata berbeda karena sampelnya berbeda.
+
+```r
+skor <- c(5, 3, 2)
+stopifnot(sum(skor) == 10)
+```
+"""
+
+
+def _proyek_kunci(tmp_path) -> Path:
+    proj = _proyek(tmp_path)
+    bab = proj / "naskah" / "bab" / "bab-01.qmd"
+    bab.write_text(bab.read_text(encoding="utf-8").replace(
+        "## Rangkuman", "## Tugas praktikum\n\n1. Hitung rata-rata sampel.\n2. Bandingkan dua sampel.\n\n## Rangkuman"),
+        encoding="utf-8")
+    (proj / "naskah" / "kunci").mkdir()
+    (proj / "naskah" / "kunci" / "bab-01.qmd").write_text(KUNCI_BAIK, encoding="utf-8")
+    _set_cfg(proj, kunci_jawaban=True)
+    return proj
+
+
+def test_gk_kunci_lengkap_lolos(tmp_path):
+    proj = _proyek_kunci(tmp_path)
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "GK", "--bab", "1")
+    assert p.returncode == 0, p.stdout
+
+
+def test_gk_menangkap_kunci_cacat(tmp_path):
+    proj = _proyek_kunci(tmp_path)
+    k = proj / "naskah" / "kunci" / "bab-01.qmd"
+    k.write_text(KUNCI_BAIK.replace("| Interpretasi | 4 |", "| Interpretasi | 3 |")
+                 .replace("> **Jawaban akhir:** rata-rata berbeda", "Rata-rata berbeda"), encoding="utf-8")
+    (proj / "naskah" / "kunci" / "temuan-soal.md").write_text(
+        "| Bab | Soal | Masalah | Status |\n|---|---|---|---|\n| 1 | 2 | data kurang | Terbuka |\n", encoding="utf-8")
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "GK", "--bab", "1")
+    assert p.returncode == 1
+    for frasa in ("tugas 1: 9", "Jawaban akhir", "Temuan soal"):
+        assert frasa in p.stdout, (frasa, p.stdout)
+
+
+def test_gg_tahap_gaya(tmp_path):
+    proj = _proyek(tmp_path)
+    _set_cfg(proj, tahap_gaya=True)
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "GG", "--bab", "1")
+    assert p.returncode == 1 and "gaya-bab-01.md belum ada" in p.stdout, p.stdout
+    bab = proj / "naskah" / "bab" / "bab-01.qmd"
+    bab.write_text(bab.read_text(encoding="utf-8") + "\nAnda dapat mengulang langkah ini.\n", encoding="utf-8")
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "GG", "--bab", "1")
+    assert "Tanpa 'Anda'" in p.stdout and "1×" in p.stdout, p.stdout
+
+
+def test_gg_nonaktif_tidak_menghalangi(tmp_path):
+    proj = _proyek(tmp_path)
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "GG", "GK", "--bab", "1")
+    assert p.returncode == 0, p.stdout
+
+
+def test_istilah_terlarang_g4(tmp_path):
+    proj = _proyek(tmp_path)
+    _set_cfg(proj, istilah_terlarang=[{"pola": r"\bestimasi area kecil\b", "saran": "pendugaan area kecil"}])
+    bab = proj / "naskah" / "bab" / "bab-01.qmd"
+    bab.write_text(bab.read_text(encoding="utf-8").replace(
+        "## Rangkuman", "Gagasan ini dipakai juga dalam estimasi area kecil.\n\n## Rangkuman"), encoding="utf-8")
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "G4")
+    assert p.returncode == 1 and "pendugaan area kecil" in p.stdout, p.stdout
+
+
+def test_g9_terbit_butuh_editor(tmp_path):
+    proj = _proyek(tmp_path)
+    _set_cfg(proj, terbit=True)
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "G9", "--lewati-perintah")
+    assert "editor-penerbitan.md belum ada" in p.stdout, p.stdout
+
+
+def test_init_keputusan_dan_kunci(tmp_path):
+    run("init_naskah.py", "--root", tmp_path)
+    n = tmp_path / "naskah"
+    assert (n / "KEPUTUSAN.md").exists()
+    cfg = json.loads((n / "harness" / "gerbang.json").read_text(encoding="utf-8"))
+    assert cfg["sapaan"] == "kita" and cfg["kunci_jawaban"] is False
+    cfg.update({"kunci_jawaban": True, "tahap_gaya": True})
+    (n / "harness" / "gerbang.json").write_text(json.dumps(cfg), encoding="utf-8")
+    run("init_naskah.py", "--root", tmp_path, "--bab-baru", 2)
+    for rel in ("kunci/bab-02.qmd", "kunci/temuan-soal.md", "ulasan/gaya-bab-02.md"):
+        assert (n / rel).exists(), rel
+    # templat telaah gaya belum berisi tindak lanjut nyata → GG belum lolos
+    p = run("cek_gerbang.py", "--root", tmp_path, "--gerbang", "GG", "--bab", "2")
+    assert "Tindak lanjut" in p.stdout

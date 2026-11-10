@@ -14,7 +14,7 @@ Memastikan setiap rumus benar dan sesuai sumber, setiap penurunan dapat diikuti 
 
 ## Langkah
 
-1. Jalankan `scripts/cek_turunan.py naskah/turunan/bab-XX-*.txt --laporan naskah/laporan/rumus-bab-XX-otomatis.md`.
+1. Jalankan `scripts/cek_turunan.py naskah/turunan/bab-XX-*.txt --laporan naskah/laporan/rumus-bab-XX-otomatis.md` dan `scripts/cek_rumus.py naskah/bab/bab-*.qmd` (penulisan rumus dan simbol, lintas bab). Tinjau setiap WARNING: R5 simbol tanpa keterangan, R10 satu simbol dua arti, R7 pemenggalan rumus tampilan (`references/rumus-dan-simbol.md`). Pastikan simbol di narasi, tabel, label sumbu gambar, dan nama objek kode sama.
 2. Untuk setiap langkah `MANUAL` atau `NUMERIK-OK`, periksa dengan simulasi bertitik acak tetap, perhitungan eksak, integral numerik, atau rujukan bukti (`references/rumus.md`). Catat cara dan hasilnya di bagian `## Catatan pemeriksaan` pada `naskah/laporan/rumus-bab-XX.md`.
 3. Pastikan versi mesin di `naskah/turunan/` sama dengan penurunan yang tercetak di naskah (langkah, urutan, dan hasil).
 4. Cocokkan setiap rumus di naskah dengan sumbernya di buku besar, dengan memperhatikan perbedaan notasi.

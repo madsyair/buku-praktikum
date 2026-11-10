@@ -64,6 +64,7 @@ def main() -> int:
         put(ASSETS / "templat-rancangan.md", n / "02-rancangan.md", a.force, log)
         put(ASSETS / "templat-state.md", n / "harness" / "STATE.md", a.force, log, {"<judul kerja>": a.judul})
         put(ASSETS / "_quarto.yml", n / "_quarto.yml", a.force, log, {'"Judul Buku"': json.dumps(a.judul)})
+        put(ASSETS / "templat-keputusan.md", n / "KEPUTUSAN.md", a.force, log)
         g = n / "glosarium.csv"
         if not g.exists() or a.force:
             shutil.copyfile(ASSETS / "glosarium.csv", g)
@@ -79,6 +80,18 @@ def main() -> int:
                 "fitur_belajar_penanda": ["Pertanyaan pemantik", "Jelaskan kembali"],
                 "min_tujuan_pembelajaran": 3,
                 "min_kata_penjelasan_kode": 8,
+                "periksa_struktur": True,
+                "pengantar_min_kata": 80,
+                "subbab_maks_kata": 800,
+                "angka_inline": True,
+                "angka_tetap": [],
+                "lebar_kode_maks": 80,
+                "rumus_abaikan": [],
+                "istilah_terlarang": [],
+                "sapaan": "kita",
+                "tahap_gaya": False,
+                "kunci_jawaban": False,
+                "terbit": False,
             }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             log.append(f"{cfg}  ditulis (eyd_periksa: {eyd or 'tidak ditemukan; isi jalurnya bila ada'})")
     else:
@@ -87,6 +100,13 @@ def main() -> int:
             {"<nomor>": str(a.bab_baru), "<n>": str(a.bab_baru)})
         put(ASSETS / "templat-bab.qmd", n / "bab" / f"bab-{b}.qmd", a.force, log)
         put(ASSETS / "templat-ulasan.md", n / "ulasan" / f"bab-{b}.md", a.force, log, {"<nomor>": str(a.bab_baru)})
+        cfg_path = n / "harness" / "gerbang.json"
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8")) if cfg_path.exists() else {}
+        if cfg.get("tahap_gaya"):
+            put(ASSETS / "templat-ulasan-gaya.md", n / "ulasan" / f"gaya-bab-{b}.md", a.force, log, {"<nomor>": str(a.bab_baru)})
+        if cfg.get("kunci_jawaban"):
+            put(ASSETS / "templat-kunci-bab.qmd", n / "kunci" / f"bab-{b}.qmd", a.force, log)
+            put(ASSETS / "templat-temuan-soal.md", n / "kunci" / "temuan-soal.md", False, log)
     print("\n".join(log))
     print("\nLangkah berikutnya: " + ("A1 mengisi naskah/00-brief.md." if a.bab_baru is None
                                      else f"A4 mengisi naskah/03-kerangka/bab-{a.bab_baru:02d}.md."))
