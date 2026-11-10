@@ -2,6 +2,8 @@
 
 ## Menulis rumus
 
+Aturan lengkap penulisan rumus, pemenggalan rumus tampilan, keterangan simbol, dan konsistensi simbol ada di `rumus-dan-simbol.md`; gerbang G6 menjalankan `cek_rumus.py` (ERROR menggagalkan, WARNING ditinjau A7). Ringkasnya:
+
 - Tulis rumus dalam LaTeX: `$...$` untuk rumus dalam baris, `$$...$$` untuk rumus terpisah. Rumus penting diberi nomor dan label agar bisa dirujuk (Quarto: `$$ ... $$ {#eq-varians}`, dirujuk dengan `@eq-varians`).
 - **Notasi ditetapkan sekali di T2** dan dipakai konsisten: huruf kapital untuk variabel acak ($X$), huruf kecil untuk nilai amatan ($x$), huruf Yunani untuk parameter ($\mu, \sigma^2, \beta$), topi untuk estimator ($\hat\beta$), garis atas untuk rata-rata sampel ($\bar{x}$), huruf tebal untuk vektor dan matriks ($\mathbf{y}, \mathbf{X}$). Catat di daftar notasi pada awal buku.
 - Setiap simbol dijelaskan saat pertama muncul, tepat setelah rumusnya: "dengan $n$ menyatakan ukuran sampel dan $x_i$ nilai amatan ke-$i$."

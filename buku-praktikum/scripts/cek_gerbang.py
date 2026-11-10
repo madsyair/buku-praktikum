@@ -292,6 +292,69 @@ def g3(n: Path, b: str, cfg: dict) -> Gate:
     return g
 
 
+LARANGAN_BAWAAN = [r"\bsokrat\w*|\bsocrat\w*|\bsokrates\b|\bsocrates\b", r"\bfeynman\b"]
+POLA_ANGKA = [("desimal", r"(?<![\w.,])\d+,\d+(?![\w,])"),
+              ("persen", r"(?<![\w.,])\d+(?:,\d+)?\s?(?:%|persen\b)"),
+              ("ribuan", r"(?<![\w.,])\d{1,3}(?:\.\d{3})+(?![\w.])")]
+
+
+def prose_lines(text: str) -> list[tuple[int, str]]:
+    """Baris prosa (di luar blok kode, YAML, dan rumus tampilan) dengan nomornya."""
+    out, in_math = [], False
+    body = re.sub(r"<!--.*?-->", lambda m: "\n" * m.group(0).count("\n"), strip_code(text), flags=re.S)
+    lines = body.splitlines()
+    start = 0
+    if lines and lines[0].strip() == "---":
+        start = next((i for i in range(1, len(lines)) if lines[i].strip() == "---"), 0) + 1
+    for i in range(start, len(lines)):
+        l = lines[i]
+        if l.strip().startswith("$$"):
+            in_math = not (l.strip().count("$$") == 2) and not in_math
+            continue
+        if not in_math:
+            out.append((i + 1, l))
+    return out
+
+
+def clean_prose(l: str) -> str:
+    l = re.sub(r"<!--.*?-->", " ", l)
+    l = re.sub(r"`r [^`]*`", " ", l)
+    l = re.sub(r"`[^`]*`", " ", l)
+    l = re.sub(r"\$[^$]*\$", " ", l)
+    l = re.sub(r"\{[#.][^}]*\}", " ", l)
+    l = re.sub(r"\[@[^\]]*\]|@\w[\w:-]*", " ", l)
+    return l
+
+
+def structure_problems(text: str, cfg: dict) -> list[str]:
+    """Pengantar bab, subbab ringkas, rangkuman (diadaptasi dari skill buku-ajar, G-STRUKTUR)."""
+    sections, cur = [], ["(pengantar)", 0, []]
+    for no, l in prose_lines(text):
+        m = re.match(r"^(#{1,6})\s+(.*?)\s*(\{[^}]*\})?\s*$", l)
+        if m:
+            sections.append(cur)
+            cur = [m.group(2).strip(), len(m.group(1)), []]
+            continue
+        cur[2].append(clean_prose(l))
+    sections.append(cur)
+    words = lambda ls: len(re.findall(r"[A-Za-zÀ-ÿ][\w'-]*", re.sub(r":::[^\n]*", " ", "\n".join(ls))))
+    out = []
+    intro = words(sections[0][2])
+    # pengantar = prosa sebelum judul pertama (judul bab ada di YAML 'title')
+    if intro < int(cfg.get("pengantar_min_kata", 80)):
+        out.append(f"pengantar bab {intro} kata (< {cfg.get('pengantar_min_kata', 80)}); buka dengan studi kasus nyata atau cerita pendek")
+    first = " ".join(" ".join(sections[0][2]).split()[:4]).lower()
+    if re.match(r"^(bab|modul) ini\b|^(pada|dalam) (bab|modul) ini\b", first):
+        out.append("pengantar dibuka komentar meta ('Bab ini …')")
+    for title, lvl, ls in sections[1:]:
+        w = words(ls)
+        if w > int(cfg.get("subbab_maks_kata", 800)) and not re.match(r"(?i)(tugas|latihan|bacaan lanjut|lampiran)", title):
+            out.append(f"bagian '{title[:40]}' {w} kata (> {cfg.get('subbab_maks_kata', 800)}); pecah per konsep")
+    if not any(re.match(r"(?i)^(rangkuman|ringkasan)\b", s[0]) for s in sections if s[1] == 2):
+        out.append("tidak ada subbab '## Rangkuman' di akhir bab")
+    return out
+
+
 def g4(n: Path, b: str, cfg: dict) -> Gate:
     g = Gate("G4", f"bab {b}")
     path = n / "bab" / f"bab-{b}.qmd"
@@ -325,6 +388,28 @@ def g4(n: Path, b: str, cfg: dict) -> Gate:
         heads = {re.sub(r"\{.*?\}", "", h).strip().lower() for h in re.findall(r"^#{2,4}\s+(.*)$", text, flags=re.M)}
         missing = [s for s in subs if s and s.lower() not in heads and not s.startswith("<")]
         g.add("Setiap subbab di kerangka ada di naskah", not missing, "; ".join(missing[:6]))
+    # --- aturan yang diadaptasi dari skill buku-ajar (lihat references/kajian-adaptasi-buku-ajar.md)
+    prose = prose_lines(text)
+    larangan = cfg.get("larangan", LARANGAN_BAWAAN)
+    hit = [f"baris {no}: {m.group(0)}" for no, l in prose for pola in larangan
+           for m in re.finditer(pola, clean_prose(l), flags=re.I)]
+    g.add("Nama teknik pengajaran tidak ditulis di naskah", not hit, "; ".join(hit[:6]))
+    ask = [f"baris {no}" for no, l in prose if re.match(r"^#{1,6}\s", l) and "?" in re.sub(r"\{[^}]*\}\s*$", "", l)]
+    g.add("Subjudul berupa frasa, bukan kalimat tanya", not ask, ", ".join(ask[:6]))
+    eqcap = [f"baris {no}" for no, l in prose if re.search(r"(?:[^.!?\s#>*-])\s+Persamaan\b", clean_prose(l))]
+    g.add("Kata 'persamaan' huruf kecil di tengah kalimat", not eqcap, ", ".join(eqcap[:6]))
+    if cfg.get("periksa_struktur", True):
+        sp = structure_problems(text, cfg)
+        g.add("Struktur bab: pengantar menarik, subbab ringkas, rangkuman", not sp, "; ".join(sp[:6]))
+    if cfg.get("angka_inline"):
+        izin = set(cfg.get("angka_tetap", []))
+        typed = [f"baris {no}: {j} '{m.group(0).strip()}'" for no, l in prose for j, pola in POLA_ANGKA
+                 for m in re.finditer(pola, clean_prose(l)) if m.group(0).strip() not in izin]
+        g.add("Angka hasil hitung di prosa berasal dari kode inline (`r ...`)", not typed, "; ".join(typed[:8]))
+    if cfg.get("lebar_kode_maks"):
+        wide = [f"baris {i + 1}" for s, e, lang, _ in blocks for i in range(s + 1, e)
+                if len(lines[i]) > int(cfg["lebar_kode_maks"]) and not lines[i].lstrip().startswith("#|")]
+        g.add(f"Baris kode ≤ {cfg['lebar_kode_maks']} karakter", not wide, ", ".join(wide[:8]))
     rows = brief_rows(read(n / "00-brief.md"))
     if rows.get("fitur belajar", "").lower().startswith("ya"):
         plain = strip_code(text).lower()
@@ -354,6 +439,16 @@ def g5(n: Path, b: str, cfg: dict, skip: bool) -> Gate:
 
 def g6(n: Path, b: str, cfg: dict, skip: bool) -> Gate:
     g = Gate("G6", f"bab {b}")
+    bab = n / "bab" / f"bab-{b}.qmd"
+    if bab.exists():
+        sys.path.insert(0, str(HERE))
+        import cek_rumus
+        temuan, _ = cek_rumus.periksa([bab], "id", cfg.get("rumus_abaikan", []))
+        err = [t for t in temuan if t["tingkat"] == "ERROR"]
+        war = [t for t in temuan if t["tingkat"] != "ERROR"]
+        fmt = lambda t: f"baris {t['baris']} {t['kode']}: {t['temuan']}"
+        g.add(f"cek_rumus.py: tidak ada ERROR penulisan rumus ({len(war)} WARNING untuk A7, lihat references/rumus-dan-simbol.md)",
+              not err, "; ".join(fmt(t) for t in (err or war)[:6]))
     files = sorted((n / "turunan").glob(f"bab-{b}-*.txt"))
     if not files:
         g.add("Tidak ada penurunan yang perlu diperiksa", True, "tidak ada berkas turunan untuk bab ini")

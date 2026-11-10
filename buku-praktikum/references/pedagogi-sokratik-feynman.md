@@ -40,7 +40,7 @@ Buku menyediakan ruang bagi pembaca untuk menjalankan siklus yang sama:
 
 - **Pertanyaan pemantik** di awal bab atau subbab, yang dijawab perlahan oleh isi bab.
 - **Jelaskan kembali** (latihan Feynman): pembaca diminta menjelaskan konsep dengan kata-kata sendiri kepada teman yang belum mengambil mata kuliah ini, lalu membandingkannya dengan rangkuman bab.
-- **Pertanyaan Sokratik setelah contoh dan keluaran kode**: "apa yang terjadi pada selang kepercayaan bila ukuran sampel dibagi dua?", "asumsi mana yang paling mungkin dilanggar pada data ini?".
+- **Pertanyaan untuk direnungkan setelah contoh dan keluaran kode** (di naskah ditulis tanpa label teknik; "Sokratik" dan "Feynman" hanya label internal skill, dan G4 menolaknya di bab): "apa yang terjadi pada selang kepercayaan bila ukuran sampel dibagi dua?", "asumsi mana yang paling mungkin dilanggar pada data ini?".
 - **Miskonsepsi umum**: kesalahpahaman yang lazim, disertai pertanyaan yang membantu pembaca menemukan sendiri letak kekeliruannya.
 - Untuk modul praktikum, pertanyaan diskusi dikaitkan langsung dengan keluaran kode yang baru dijalankan pembaca.
 

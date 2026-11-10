@@ -19,7 +19,9 @@ Rinciannya di `references/pedagogi-sokratik-feynman.md`. Intinya, pertanyaan Sok
 
 - **Penulis**: konsep inti harus bisa dijelaskan dalam lima kalimat sederhana sebelum bab dirancang (A2, A3); bila tidak bisa, literaturnya belum cukup.
 - **Naskah**: bab disusun sebagai peta pertanyaan (A3), dan setiap paragraf menjawab satu pertanyaan yang lahir dari paragraf sebelumnya (A4). Inilah mesin utama narasi yang mengalir.
-- **Pembaca**: pertanyaan pemantik, pertanyaan Sokratik setelah keluaran kode, latihan *jelaskan kembali*, dan miskonsepsi umum (A5); naskah diuji oleh pembaca simulasi berkonteks bersih (A8).
+- **Pembaca**: pertanyaan pemantik, pertanyaan untuk direnungkan setelah keluaran kode, latihan *jelaskan kembali*, dan miskonsepsi umum (A5); naskah diuji oleh pembaca simulasi berkonteks bersih (A8).
+
+**Label internal.** "Sokratik" dan "Feynman" adalah nama kerja skill. Nama itu tidak pernah ditulis di naskah buku (judul, subjudul, kotak, latihan); tekniknya bekerja tanpa label. Gerbang G4 menolaknya (`larangan` di `gerbang.json`).
 
 ## Agen dan kontraknya
 
@@ -90,9 +92,9 @@ Skrip memeriksa artefak dan menjalankan pemeriksa kode, rumus, EYD, dan istilah,
 | G1 Literatur | Ada pustaka dan klaim; tidak ada klaim `DIUSULKAN` tersisa; setiap bab punya sumber utama di pustaka |
 | G2 Rancangan | Setiap bab punya pertanyaan pemandu, penjelasan Feynman, minimal tiga tujuan, subbab, dan sumber; notasi dan glosarium ditetapkan; persetujuan pengguna dicatat |
 | G3 Kerangka | Setiap paragraf punya pertanyaan, fungsi, gagasan pokok, dan transisi; setiap subbab punya penjelasan Feynman; ID klaim yang dirujuk terverifikasi |
-| G4 Draf | Sitasi ada di pustaka; setiap blok kode diikuti penjelasan; subbab kerangka ada di naskah; tidak ada penanda `[[...]]`; fitur belajar ada bila diaktifkan |
+| G4 Draf | Sitasi ada di pustaka; setiap blok kode diikuti penjelasan; subbab kerangka ada di naskah; tidak ada penanda `[[...]]`; fitur belajar ada bila diaktifkan; tanpa nama teknik pengajaran; subjudul bukan kalimat tanya; *persamaan* huruf kecil di tengah kalimat; **struktur bab** (pengantar berupa studi kasus/cerita ≥ `pengantar_min_kata`, subbab ≤ `subbab_maks_kata`, `## Rangkuman`); bila diaktifkan di `gerbang.json`: angka hasil hitung dari kode inline (`angka_inline`), lebar baris kode (`lebar_kode_maks`) |
 | G5 Kode | `jalankan_kode.py` keluar 0 |
-| G6 Rumus | `cek_turunan.py` keluar 0; langkah manual dan numerik punya catatan pemeriksaan |
+| G6 Rumus | `cek_rumus.py` tanpa ERROR (penulisan rumus dan simbol; WARNING untuk A7); `cek_turunan.py` keluar 0; langkah manual dan numerik punya catatan pemeriksaan |
 | G7 Ulasan | Putusan terakhir A8 `LOLOS`; tidak ada temuan mayor terbuka |
 | G8 Bahasa | Pemeriksa EYD 0 ERROR; `cek_istilah.py` keluar 0; laporan bahasa ada |
 | G9 Perakitan | Semua bab lolos G3–G8; berkas proyek lengkap |
@@ -118,7 +120,9 @@ Setiap putaran dicatat di `STATE.md`. Jika anggaran putaran habis, perbaikan ter
 | `references/gaya-narasi.md` | Narasi mengalir, koherensi, gaya bercerita, register akademik yang mudah dipahami | A4, A5, A9 |
 | `references/istilah.md` | Kebijakan istilah (padanan KBBI selektif, serapan, istilah asing) dan istilah khas bidang | A3, A5, A9 |
 | `references/kode.md` | Pola contoh kode, lingkungan dan reprodusibilitas, interpretasi keluaran | A5, A6 |
-| `references/rumus.md` | Penulisan rumus, penurunan langkah demi langkah, format berkas turunan | A5, A7 |
+| `references/rumus.md` | Penurunan langkah demi langkah, format berkas turunan, verifikasi | A5, A7 |
+| `references/rumus-dan-simbol.md` | Rumus sebagai bagian kalimat, tipografi ISO 80000-2, pemenggalan rumus, keterangan dan konsistensi simbol (R1–R12) | A3, A5, A7, A9 |
+| `references/kajian-adaptasi-buku-ajar.md` | Kajian bagian skill buku-ajar yang diadaptasi ke skill ini (diterapkan dan diusulkan) | A0, pemelihara skill |
 
 Templat ada di `assets/` (brief, literatur, rancangan, kerangka bab, bab Quarto, ulasan, STATE, `_quarto.yml`, `glosarium.csv`).
 
@@ -129,6 +133,7 @@ Templat ada di `assets/` (brief, literatur, rancangan, kerangka bab, bab Quarto,
 | `scripts/init_naskah.py` | Menyiapkan folder kerja dan berkas per bab |
 | `scripts/cek_gerbang.py` | Menjalankan gerbang G0–G9 |
 | `scripts/jalankan_kode.py` | Menjalankan blok R/Python/Julia berurutan per sesi, mencatat versi, galat, dan peringatan |
+| `scripts/cek_rumus.py` | Memeriksa penulisan rumus dan simbol: kalimat diawali lambang, simbol tanpa keterangan, arti ganda, pemenggalan rumus, operator miring (dipanggil G6) |
 | `scripts/cek_turunan.py` | Memeriksa setiap langkah penurunan dengan SymPy: simbolik, titik acak, dan titik pembantah |
 | `scripts/cek_istilah.py` | Memeriksa konsistensi istilah, padanan pada kemunculan pertama, dan huruf miring istilah asing |
 

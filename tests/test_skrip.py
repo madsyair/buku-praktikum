@@ -228,3 +228,39 @@ def test_gerbang_menangkap_kesalahan(tmp_path):
     for g in ("G1 GAGAL", "G3 GAGAL", "G4 GAGAL", "G6 GAGAL", "G7 GAGAL", "G8 GAGAL"):
         assert g in p.stdout, g
     assert "fiktif2020" in p.stdout
+
+
+# ------------------------------------------------------------------ adaptasi dari buku-ajar
+def test_cek_rumus_menolak_dan_meloloskan(tmp_path):
+    buruk = tmp_path / "buruk.qmd"
+    buruk.write_text("$\\beta$ diestimasi dengan kuadrat terkecil.\n", encoding="utf-8")
+    p = run("cek_rumus.py", buruk, "--json")
+    assert p.returncode == 1
+    assert any(t["kode"] == "R1" for t in json.loads(p.stdout)["temuan"])
+    baik = tmp_path / "baik.qmd"
+    baik.write_text("Rata-rata sampel didefinisikan sebagai\n$$\n\\bar x = \\frac{1}{n}\\sum_{i=1}^{n} x_i,\n$$\n"
+                    "dengan $n$ menyatakan ukuran sampel dan $x_i$ menyatakan nilai amatan ke-$i$.\n", encoding="utf-8")
+    p = run("cek_rumus.py", baik, "--json")
+    assert p.returncode == 0, p.stdout
+    assert json.loads(p.stdout)["warning"] == 0, p.stdout
+
+
+def test_gerbang_g4_aturan_adaptasi(tmp_path):
+    proj = tmp_path / "p"
+    shutil.copytree(FIXTURE, proj)
+    cfg_path = proj / "naskah" / "harness" / "gerbang.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg.update({"angka_inline": True, "lebar_kode_maks": 40})
+    cfg_path.write_text(json.dumps(cfg), encoding="utf-8")
+    bab = proj / "naskah" / "bab" / "bab-01.qmd"
+    t = bab.read_text(encoding="utf-8")
+    t = t.replace("## Rata-rata sampel", "## Apa itu rata-rata sampel?")
+    t = t.replace("## Rangkuman", "## Pertanyaan Sokratik")
+    t = t.replace("Akibatnya, rata-rata", "Seperti pada Persamaan (1), rata-rata")
+    t = t.replace("x <- c(812, 945, 1020, 760, 1105)", "x <- c(812, 945, 1020, 760, 1105, 999, 888, 777)")
+    bab.write_text(t, encoding="utf-8")
+    p = run("cek_gerbang.py", "--root", proj, "--gerbang", "G4")
+    assert p.returncode != 0
+    for frasa in ("Nama teknik pengajaran", "bukan kalimat tanya", "'persamaan' huruf kecil",
+                  "Struktur bab", "kode inline", "Baris kode"):
+        assert frasa in p.stdout, (frasa, p.stdout)

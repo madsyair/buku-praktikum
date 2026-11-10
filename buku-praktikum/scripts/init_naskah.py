@@ -79,6 +79,13 @@ def main() -> int:
                 "fitur_belajar_penanda": ["Pertanyaan pemantik", "Jelaskan kembali"],
                 "min_tujuan_pembelajaran": 3,
                 "min_kata_penjelasan_kode": 8,
+                "periksa_struktur": True,
+                "pengantar_min_kata": 80,
+                "subbab_maks_kata": 800,
+                "angka_inline": True,
+                "angka_tetap": [],
+                "lebar_kode_maks": 80,
+                "rumus_abaikan": [],
             }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             log.append(f"{cfg}  ditulis (eyd_periksa: {eyd or 'tidak ditemukan; isi jalurnya bila ada'})")
     else:

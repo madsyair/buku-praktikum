@@ -39,6 +39,8 @@ Permintaan pengguna, `naskah/harness/STATE.md`, `naskah/harness/laporan-gerbang.
 | Bahasa | A9 (loop internal `periksa.py` EYD) | G8 lolos | 4 putaran |
 | Bab | A0 | G3–G8 lolos untuk bab ini | — |
 
+**Memperbaiki temuan A8 (diadaptasi dari skill buku-ajar).** A5 tidak menerima temuan begitu saja. Untuk setiap temuan isi, A5 memeriksanya lebih dulu dengan menghitung ulang, membuka sumber di buku besar klaim, atau menjalankan kode. Hasilnya ditulis di bawah temuan sebagai *diperbaiki* (dengan lokasi) atau *tidak diterapkan* (dengan bukti: angka hitung ulang, baris, atau kutipan sumber), bukan pendapat. A8 memverifikasi bukti itu pada putaran berikutnya.
+
 Setiap putaran dicatat di `STATE.md`: agen, gerbang, hasil, langkah berikutnya. Jika anggaran habis, perbaikan malah membuka temuan baru dua putaran berturut-turut, atau ada keputusan yang tidak dapat dibatalkan dan masuk akal ke dua arah, berhenti dan tanyakan pengguna.
 
 ## Aturan penting
