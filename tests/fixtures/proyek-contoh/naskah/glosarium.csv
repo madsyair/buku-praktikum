@@ -37,7 +37,7 @@ heteroscedasticity;heteroskedastisitas;serapan;;;
 goodness of fit;goodness of fit;asing;kebaikan suai;;
 bootstrap;bootstrap;asing;;;Tidak ada padanan baku, jelaskan maknanya pada kemunculan pertama
 resampling;penarikan sampel ulang;indonesia;resampling;;
-small area estimation;estimasi area kecil;indonesia;small area estimation;;Singkatan SAE setelah diperkenalkan
+small area estimation;pendugaan area kecil;indonesia;small area estimation;;Singkatan SAE setelah diperkenalkan
 random effect;efek acak;serapan;random effect;pengaruh acak;
 fixed effect;efek tetap;serapan;fixed effect;pengaruh tetap;
 mixed model;model efek campuran;indonesia;mixed model;;Bedakan dengan mixture model

@@ -22,16 +22,18 @@ Status:
 | Perbaikan temuan pembaca | Perbaikan dikerjakan agen lain yang memeriksa temuan dulu; "tidak diterapkan" wajib berbukti | A5 mencentang temuan A8 tanpa kewajiban memeriksa | A5 memeriksa setiap temuan isi dan menulis *diperbaiki* (lokasi) atau *tidak diterapkan* (bukti); A8 memverifikasi | `a0-orkestrator.md` |
 | Uji pemeriksa | Fikstur gagal/lulus per gerbang | Ada `tests/test_skrip.py` | Uji baru untuk `cek_rumus.py` dan aturan G4 hasil adaptasi; bab contoh di fikstur dilengkapi pengantar dan rangkuman | `tests/test_skrip.py`, `tests/fixtures/` |
 
-## 2. Diusulkan (perlu keputusan)
+## 2. Usulan dan keputusan (10 November 2026)
 
-| No. | Aspek di buku-ajar | Manfaat untuk praktikum | Biaya | Rekomendasi |
-|---|---|---|---|---|
-| U1 | **Kunci jawaban berubrik** (peran 13–14, `kunci-jawaban.md`): pembahasan, jawaban akhir, rubrik 10 poin, temuan soal dikembalikan ke soal induk | Tugas praktikum lebih mudah dinilai asisten; soal yang ambigu ketahuan sebelum dipakai di kelas | Satu agen (A11) dan satu gerbang | **Setuju**. Praktikum hampir selalu dinilai, dan menurunkan rubrik dari tugas murah bila dikerjakan per bab |
-| U2 | **Tahap gaya buku ajar** (peran 22–23, `gaya-buku-ajar.md`): tulis ulang komunikatif dengan *Anda/kita*, semi-formal, istilah dijelaskan, sitasi seperlunya ke *Bacaan lanjut* | Modul yang padat sitasi selama penulisan menjadi enak dibaca | Dua peran dan gerbang G-GAYA-AJAR | Setuju untuk mode `buku`; tidak perlu untuk modul satu pertemuan |
-| U3 | **Registri klaim berkutipan verbatim** (G-REFERENSI, `referensi.py`) | Klaim dapat dicocokkan ulang otomatis ke teks sumber | Format buku besar berubah dari tabel parafrase ke JSON; perlu salinan teks sumber | Tunda. Buku besar klaim + A2v cukup untuk buku tunggal |
-| U4 | **Editor penerbitan** (peran 24) dan **penelaah pakar buku ajar** (21, Permendikbudristek 22/2022) | Kelayakan dan kesiapan terbit buku yang akan diajukan ke penerbit atau angka kredit | Dua peran di akhir buku | Setuju bila buku akan diterbitkan; lewati untuk modul internal |
-| U5 | **Keputusan penulis → gerbang + fikstur → audit semua bab** (loop D, `KEPUTUSAN-RANCANGAN.md`, `REVISI.md`) | Keputusan gaya tidak lupa diterapkan ke bab lama | Disiplin pencatatan | Setuju (murah): setiap keputusan gaya yang dapat diperiksa mesin ditambahkan ke `gerbang.json` disertai satu uji |
-| U6 | **Pelajaran proyek** (`pelajaran-proyek.md`): kesalahan berulang dan pencegahannya | Mencegah kesalahan yang sama terulang | Pemeliharaan berkas | Setuju: salin butir yang relevan untuk praktikum (klaim perbandingan dikunci `stopifnot`, narasi gambar dihitung, pembulatan tabel) |
+Pengguna menyetujui rekomendasi: U1, U2, U4, U5, dan U6 **diterapkan** pada versi 0.3.0; U3 **ditunda**.
+
+| No. | Aspek di buku-ajar | Manfaat untuk praktikum | Biaya | Rekomendasi | Status |
+|---|---|---|---|---|---|
+| U1 | **Kunci jawaban berubrik** (peran 13–14, `kunci-jawaban.md`): pembahasan, jawaban akhir, rubrik 10 poin, temuan soal dikembalikan ke soal induk | Tugas praktikum lebih mudah dinilai asisten; soal yang ambigu ketahuan sebelum dipakai di kelas | Satu agen (A11) dan satu gerbang | **Setuju**. Praktikum hampir selalu dinilai, dan menurunkan rubrik dari tugas murah bila dikerjakan per bab | **Diterapkan**: A11, A11v, `kunci-jawaban.md`, `templat-kunci-bab.qmd`, `templat-temuan-soal.md`, gerbang GK (`kunci_jawaban`), uji |
+| U2 | **Tahap gaya buku ajar** (peran 22–23, `gaya-buku-ajar.md`): tulis ulang komunikatif dengan sapaan *kita*, semi-formal, istilah dijelaskan, sitasi seperlunya ke *Bacaan lanjut* | Modul yang padat sitasi selama penulisan menjadi enak dibaca | Dua peran dan gerbang G-GAYA-AJAR | Setuju untuk mode `buku`; tidak perlu untuk modul satu pertemuan | **Diterapkan** (sapaan *kita*): A12, A13, `gaya-buku-ajar.md`, `templat-ulasan-gaya.md`, gerbang GG (`tahap_gaya`), uji |
+| U3 | **Registri klaim berkutipan verbatim** (G-REFERENSI, `referensi.py`) | Klaim dapat dicocokkan ulang otomatis ke teks sumber | Format buku besar berubah dari tabel parafrase ke JSON; perlu salinan teks sumber | Tunda. Buku besar klaim + A2v cukup untuk buku tunggal | **Ditunda** |
+| U4 | **Editor penerbitan** (peran 24) dan **penelaah pakar buku ajar** (21, Permendikbudristek 22/2022) | Kelayakan dan kesiapan terbit buku yang akan diajukan ke penerbit atau angka kredit | Dua peran di akhir buku | Setuju bila buku akan diterbitkan; lewati untuk modul internal | **Diterapkan** (editor penerbitan saja): A14, G9 memeriksa `Keputusan: siap terbit` bila `terbit`, uji |
+| U5 | **Keputusan penulis → gerbang + fikstur → audit semua bab** (loop D, `KEPUTUSAN-RANCANGAN.md`, `REVISI.md`) | Keputusan gaya tidak lupa diterapkan ke bab lama | Disiplin pencatatan | Setuju (murah): setiap keputusan gaya yang dapat diperiksa mesin ditambahkan ke `gerbang.json` disertai satu uji | **Diterapkan**: `KEPUTUSAN.md` (dibuat `init_naskah.py`), `istilah_terlarang` di G4, loop keputusan di A0, uji |
+| U6 | **Pelajaran proyek** (`pelajaran-proyek.md`): kesalahan berulang dan pencegahannya | Mencegah kesalahan yang sama terulang | Pemeliharaan berkas | Setuju: salin butir yang relevan untuk praktikum (klaim perbandingan dikunci `stopifnot`, narasi gambar dihitung, pembulatan tabel) | **Diterapkan**: `pelajaran-proyek.md` (13 butir terpilih) |
 
 ## 3. Tidak diadaptasi
 

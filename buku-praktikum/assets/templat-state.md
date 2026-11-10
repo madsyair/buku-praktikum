@@ -6,11 +6,11 @@
 
 ## Status gerbang
 
-| Bab | G3 | G4 | G5 | G6 | G7 | G8 |
-|---|---|---|---|---|---|---|
-| 01 | | | | | | |
+| Bab | G3 | G4 | G5 | G6 | G7 | G8 | GG | GK |
+|---|---|---|---|---|---|---|---|---|
+| 01 | | | | | | | | |
 
-Gerbang buku: G0 ☐  G1 ☐  G2 ☐  G9 ☐
+Gerbang buku: G0 ☐  G1 ☐  G2 ☐  G9 ☐  (GG/GK: isi "—" bila tidak diaktifkan)
 
 ## Log putaran
 

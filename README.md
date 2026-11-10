@@ -7,9 +7,9 @@ Skill Claude untuk menulis buku ajar, modul praktikum, dan diktat matematika, st
 | Bagian | Isi |
 |---|---|
 | Alur | Brief → studi literatur terverifikasi → rancangan bab → kerangka paragraf → penulisan → verifikasi kode, rumus, dan klaim → ulasan Sokratik–Feynman → penyuntingan bahasa → perakitan |
-| Agen | A0 orkestrator, A1 perencana, A2 peneliti literatur, A2v verifikator klaim, A3 arsitek buku, A4 perancang kerangka, A5 penulis, A6 insinyur kode, A7 verifikator matematis, A8 pembaca Sokratik–Feynman, A9 penyunting bahasa, A10 perakit |
+| Agen | A0 orkestrator, A1 perencana, A2 peneliti literatur, A2v verifikator klaim, A3 arsitek buku, A4 perancang kerangka, A5 penulis, A6 insinyur kode, A7 verifikator matematis, A8 pembaca Sokratik–Feynman, A9 penyunting bahasa, A10 perakit; pilihan: A11/A11v kunci jawaban, A12/A13 gaya buku ajar, A14 editor penerbitan |
 | Pedagogi | Bab sebagai peta pertanyaan, paragraf sebagai rantai tanya-jawab, uji penjelasan ulang oleh pembaca simulasi berkonteks bersih, fitur belajar (pertanyaan pemantik, jelaskan kembali, miskonsepsi) |
-| Harness | `init_naskah.py` (folder kerja dan STATE), `cek_gerbang.py` (gerbang G0–G9 dan `laporan-gerbang.md`) |
+| Harness | `init_naskah.py` (folder kerja dan STATE), `cek_gerbang.py` (gerbang G0–G9, GG gaya buku ajar, GK kunci jawaban, dan `laporan-gerbang.md`) |
 | Pemeriksa | `jalankan_kode.py` (blok R/Python/Julia), `cek_turunan.py` (langkah penurunan dengan SymPy), `cek_rumus.py` (penulisan rumus dan simbol), `cek_istilah.py` (konsistensi istilah dan padanan KBBI) |
 | Kebijakan istilah | Padanan KBBI dipakai selektif, serapan sesuai EYD diutamakan bila lebih populer, istilah asing disertai padanan pada kemunculan pertama; glosarium bawaan 79 istilah |
 

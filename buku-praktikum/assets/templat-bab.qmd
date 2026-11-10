@@ -10,7 +10,7 @@ Nama teknik pengajaran (label internal skill) tidak pernah ditulis di naskah; ge
 Rumus dan simbol mengikuti references/rumus-dan-simbol.md (gerbang G6).
 -->
 
-Pengantar bab (80–300 kata) berupa studi kasus nyata atau cerita pendek: data atau peristiwa di lapangan yang statusnya disebut, atau tokoh yang menghadapi masalah. Tulis seolah Anda bercerita kepada mahasiswa, dengan kalimat pendek dan sapaan *kita* atau *Anda*.
+Pengantar bab (80–300 kata) berupa studi kasus nyata atau cerita pendek: data atau peristiwa di lapangan yang statusnya disebut, atau tokoh yang menghadapi masalah. Tulis seolah kita bercerita kepada mahasiswa, dengan kalimat pendek dan sapaan *kita*.
 
 Kaitkan dengan bab sebelumnya bila perlu, lalu akhiri pengantar dengan pertanyaan yang akan kita jawab di bab ini. Jangan membuka dengan "Bab ini membahas …". Kasus yang sama dipakai lagi di contoh terbimbing dan dijawab di rangkuman.
 
