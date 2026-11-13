@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -381,3 +382,82 @@ def test_init_keputusan_dan_kunci(tmp_path):
     # templat telaah gaya belum berisi tindak lanjut nyata → GG belum lolos
     p = run("cek_gerbang.py", "--root", tmp_path, "--gerbang", "GG", "--bab", "2")
     assert "Tindak lanjut" in p.stdout
+
+
+# ------------------------------------------------------------------ model per peran (0.4.0)
+SKILL_DIR = ROOT / "buku-praktikum"
+AGEN_DIR = SKILL_DIR / "claude-agents"
+sys.path.insert(0, str(SCRIPTS))
+import cek_agen  # noqa: E402
+
+
+def test_claude_agents_frontmatter_sah():
+    berkas = sorted(AGEN_DIR.glob("buku-praktikum-*.md"))
+    assert berkas
+    for b in berkas:
+        fm = cek_agen.frontmatter(b.read_text(encoding="utf-8"))
+        assert fm is not None, b.name
+        assert fm["name"] == b.stem and fm["description"].endswith(".")
+        assert fm["model"] in {"opus", "sonnet", "haiku", "fable"}, b.name
+        assert set(fm) <= {"name", "description", "model", "tools"}, b.name
+    p = run("cek_agen.py")
+    assert p.returncode == 0, p.stdout
+
+
+def test_setiap_peran_punya_pasangan_agen():
+    peran = {p.stem for p in (SKILL_DIR / "agents").glob("a*.md")} - {"a0-orkestrator"}
+    pasangan = {b.stem.removeprefix("buku-praktikum-") for b in AGEN_DIR.glob("buku-praktikum-*.md")}
+    assert peran == pasangan
+    assert {"a2v-verifikator-klaim", "a11v-pemeriksa-kunci"} <= pasangan
+
+
+def test_tabel_model_a0_sama_dengan_claude_agents():
+    """Tabel "Pilih model per peran" di A0 dan frontmatter claude-agents tidak boleh menyimpang."""
+    teks = (SKILL_DIR / "agents" / "a0-orkestrator.md").read_text(encoding="utf-8")
+    tabel = dict(re.findall(r"^\| (A\d+v?) [^|]*\| \*\*(\w+)\*\*", teks, re.M))
+    assert len(tabel) == 16
+    for b in AGEN_DIR.glob("buku-praktikum-*.md"):
+        kode = "A" + b.stem.removeprefix("buku-praktikum-a").split("-")[0]
+        assert tabel[kode] == cek_agen.frontmatter(b.read_text(encoding="utf-8"))["model"], b.name
+
+
+def _salin_agen(tmp_path) -> Path:
+    d = tmp_path / "agents"
+    shutil.copytree(AGEN_DIR, d)
+    return d
+
+
+def test_model_tidak_sah_ditolak(tmp_path):
+    d = _salin_agen(tmp_path)
+    f = d / "buku-praktikum-a7-verifikator-matematis.md"
+    f.write_text(f.read_text(encoding="utf-8").replace("model: opus", "model: gpt-4"), encoding="utf-8")
+    p = run("cek_agen.py", "--folder", d)
+    assert p.returncode == 1 and "gpt-4" in p.stdout
+
+
+def test_cek_agen_menolak_pasangan_hilang_dan_frontmatter_rusak(tmp_path):
+    d = _salin_agen(tmp_path)
+    (d / "buku-praktikum-a11v-pemeriksa-kunci.md").unlink()
+    f = d / "buku-praktikum-a5-penulis.md"
+    f.write_text(f.read_text(encoding="utf-8").replace("name: buku-praktikum-a5-penulis", "nama salah"),
+                 encoding="utf-8")
+    p = run("cek_agen.py", "--folder", d)
+    assert p.returncode == 1
+    assert "a11v-pemeriksa-kunci.md: 0 pasangan" in p.stdout and "a5-penulis.md: frontmatter" in p.stdout
+
+
+def test_init_pasang_agen_menyalin(tmp_path):
+    run("init_naskah.py", "--root", tmp_path)
+    assert not (tmp_path / ".claude").exists()      # bawaan: tidak dipasang
+    p = run("init_naskah.py", "--root", tmp_path, "--pasang-agen")
+    assert p.returncode == 0, p.stderr
+    tujuan = tmp_path / ".claude" / "agents"
+    sumber = sorted(b.name for b in AGEN_DIR.glob("*.md"))
+    assert sorted(b.name for b in tujuan.glob("*.md")) == sumber
+    for nama in sumber:
+        assert (tujuan / nama).read_bytes() == (AGEN_DIR / nama).read_bytes()
+    assert run("cek_agen.py", "--folder", tujuan).returncode == 0
+    # tidak menimpa tanpa --force
+    (tujuan / sumber[0]).write_text("lokal", encoding="utf-8")
+    run("init_naskah.py", "--root", tmp_path, "--pasang-agen")
+    assert (tujuan / sumber[0]).read_text(encoding="utf-8") == "lokal"

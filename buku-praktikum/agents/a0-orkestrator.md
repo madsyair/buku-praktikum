@@ -28,6 +28,35 @@ Permintaan pengguna, `naskah/harness/STATE.md`, `naskah/harness/laporan-gerbang.
 - Bila alat subagen tidak tersedia, jalankan peran secara berurutan dalam satu konteks. Untuk A2v dan A8, baca ulang artefak dari berkas, kerjakan daftar periksanya butir demi butir, dan beri tahu pengguna bahwa ulasan dilakukan tanpa isolasi konteks.
 - Agen yang tidak saling bergantung (mis. A6 dan A7 pada bab yang sama, atau A4 untuk dua bab berbeda) boleh dijalankan paralel.
 
+## Pilih model per peran
+
+Keputusan penulis 2026-11-13, mengikuti skema skill buku-ajar: setiap peran punya model bawaan. Peran dapat dipasang sebagai jenis agen Claude Code lewat `claude-agents/` dan `init_naskah.py --pasang-agen` (ke `<proyek>/.claude/agents/`), sehingga modelnya terpasang otomatis. A0 sendiri adalah sesi utama; modelnya dipilih pengguna.
+
+| Peran | Model | Alasan |
+| --- | --- | --- |
+| A1 perencana | **opus** | Brief menentukan pembaca, perangkat lunak, dan cakupan seluruh buku; salah arah di sini mahal. |
+| A2 peneliti literatur | **sonnet** | Pengumpulan sumber dan pengisian buku besar berpola; setiap klaim diverifikasi ulang oleh A2v (opus). |
+| A2v verifikator klaim | **opus** | Memutuskan status klaim dan identitas pustaka; kesalahannya lolos ke seluruh bab. Fable boleh menggantikan. |
+| A3 arsitek buku | **opus** | Peta pertanyaan, urutan prasyarat, notasi, dan glosarium adalah keputusan rancangan lintas bab. |
+| A4 perancang kerangka | **opus** | Rantai pertanyaan per paragraf menentukan alur dan kebenaran bab; G3 hanya memeriksa bentuknya. |
+| A5 penulis | **opus** | Menulis teori, penurunan, dan interpretasi; mutu isi bab bertumpu di sini. |
+| A6 insinyur kode | **opus** | Membedakan galat teknis dari kesalahan konsep dan menilai interpretasi keluaran; tidak cukup dengan menjalankan skrip. |
+| A7 verifikator matematis | **opus** | Memeriksa langkah `MANUAL`/`NUMERIK-OK` dan ketepatan penjelasan sederhana yang tidak tertangkap SymPy. Fable boleh menggantikan. |
+| A8 pembaca Sokratik–Feynman | **sonnet** | Memerankan pembaca sasaran; uji banding pembaca pemula menemukan masalah inti yang sama dengan opus. |
+| A9 penyunting bahasa | **sonnet** | Penyuntingan berpedoman EYD dan glosarium; `periksa.py` dan `cek_istilah.py` menjaga hasilnya. |
+| A10 perakit | **sonnet** | Sebagian besar mekanis (BibTeX, rujukan silang, render, G9), tetapi juga menulis prakata; rakit ulang murni mekanis boleh turun ke haiku. |
+| A11 pembuat kunci | **opus** | Menyelesaikan soal, menghitung, dan menyusun rubrik; kunci yang salah menyesatkan pengajar. |
+| A11v pemeriksa kunci | **opus** | Hitung ulang mandiri dengan cara lain dan menilai kecukupan rubrik. Fable boleh menggantikan. |
+| A12 penyunting gaya | **sonnet** | Tulis ulang berpedoman `gaya-buku-ajar.md` ke berkas terpisah; substansi dijaga A13 dan gerbang G4–G8, GG. |
+| A13 penerap revisi gaya | **sonnet** | Membandingkan versi dan menerapkan perubahan berpola; gerbang G4–G8 dan GG memeriksa ulang. |
+| A14 editor penerbitan | **sonnet** | Telaah konsistensi dan kelengkapan produksi berpola lembar gaya; tidak mengubah substansi. |
+
+- **haiku** untuk tugas mekanis di luar peran: menjalankan `cek_gerbang.py` dan merangkum `laporan-gerbang.md`, menghitung inventaris temuan, penggantian istilah berpola, dan rakit ulang A10 tanpa prakata baru. Hasil hitungan haiku tetap dicek dengan skrip, bukan dipercaya begitu saja.
+- **fable** setara opus untuk peran verifikator dan reviewer (diuji dua kali) dan boleh menggantikan opus pada A7, A2v, dan A11v. Opus lebih konsisten menghitung ulang angka.
+- **Bab penting** (bab inti, bab dengan penurunan panjang, atau bab yang pernah gagal G6 atau GK): jalankan dua reviewer dengan model berbeda (opus dan fable) pada peran yang sama (A7, A2v, atau A11v), masing-masing sebagai subagen berkonteks bersih. Gabungkan temuannya; setiap uji banding memberi temuan unik di kedua sisi.
+- **Naik satu tingkat** (haiku → sonnet, sonnet → opus) untuk bab yang sulit atau bila ulasan model ringan meleset (temuan penting lolos dan baru tertangkap peninjau lain atau gerbang). **Turun satu tingkat** bila tugasnya mekanis. Setiap perubahan model dan alasannya dicatat di `STATE.md`.
+- Tabel ini diperbarui hanya lewat uji banding per peran pada pekerjaan nyata (`references/kajian-model.md`).
+
 ## Mengendalikan loop
 
 | Loop | Pasangan | Berhenti bila | Anggaran |

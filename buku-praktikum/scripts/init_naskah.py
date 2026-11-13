@@ -4,6 +4,7 @@
 Contoh:
     python init_naskah.py --root . --judul "Statistika Area Kecil dengan R"
     python init_naskah.py --root . --bab-baru 3      # siapkan berkas kerangka, bab, dan ulasan untuk bab 3
+    python init_naskah.py --root . --pasang-agen     # salin claude-agents/*.md ke <root>/.claude/agents/
 
 Skrip aman dijalankan ulang: berkas yang sudah ada tidak ditimpa tanpa --force.
 """
@@ -17,6 +18,7 @@ from pathlib import Path
 
 SKILL = Path(__file__).resolve().parent.parent
 ASSETS = SKILL / "assets"
+AGEN = SKILL / "claude-agents"
 
 
 def find_eyd() -> str | None:
@@ -52,6 +54,9 @@ def main() -> int:
     ap.add_argument("--judul", default="Judul Buku")
     ap.add_argument("--bab-baru", type=int, help="siapkan berkas untuk bab bernomor ini")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--pasang-agen", action="store_true",
+                    help="salin claude-agents/*.md ke <root>/.claude/agents/ agar tiap peran menjadi jenis agen "
+                         "Claude Code dengan model bawaannya (bawaan: tidak)")
     a = ap.parse_args()
 
     n = a.root / "naskah"
@@ -107,6 +112,15 @@ def main() -> int:
         if cfg.get("kunci_jawaban"):
             put(ASSETS / "templat-kunci-bab.qmd", n / "kunci" / f"bab-{b}.qmd", a.force, log)
             put(ASSETS / "templat-temuan-soal.md", n / "kunci" / "temuan-soal.md", False, log)
+    if a.pasang_agen:
+        for f in sorted(AGEN.glob("buku-praktikum-*.md")):
+            dst = a.root / ".claude" / "agents" / f.name
+            if dst.exists() and not a.force:
+                log.append(f"{dst}  sudah ada (dilewati)")
+                continue
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(f, dst)
+            log.append(f"{dst}  ditulis")
     print("\n".join(log))
     print("\nLangkah berikutnya: " + ("A1 mengisi naskah/00-brief.md." if a.bab_baru is None
                                      else f"A4 mengisi naskah/03-kerangka/bab-{a.bab_baru:02d}.md."))
