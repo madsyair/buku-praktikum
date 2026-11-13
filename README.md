@@ -11,6 +11,7 @@ Skill Claude untuk menulis buku ajar, modul praktikum, dan diktat matematika, st
 | Pedagogi | Bab sebagai peta pertanyaan, paragraf sebagai rantai tanya-jawab, uji penjelasan ulang oleh pembaca simulasi berkonteks bersih, fitur belajar (pertanyaan pemantik, jelaskan kembali, miskonsepsi) |
 | Harness | `init_naskah.py` (folder kerja dan STATE), `cek_gerbang.py` (gerbang G0–G9, GG gaya buku ajar, GK kunci jawaban, dan `laporan-gerbang.md`) |
 | Pemeriksa | `jalankan_kode.py` (blok R/Python/Julia), `cek_turunan.py` (langkah penurunan dengan SymPy), `cek_rumus.py` (penulisan rumus dan simbol), `cek_istilah.py` (konsistensi istilah dan padanan KBBI) |
+| Model per peran | opus untuk perencanaan, penulisan, verifikasi, dan kunci; sonnet untuk pembaca dan penyuntingan berpola; haiku untuk tugas mekanis; fable boleh menggantikan opus pada peran verifikator (tabel di `agents/a0-orkestrator.md`, dasar di `references/kajian-model.md`) |
 | Kebijakan istilah | Padanan KBBI dipakai selektif, serapan sesuai EYD diutamakan bila lebih populer, istilah asing disertai padanan pada kemunculan pertama; glosarium bawaan 79 istilah |
 
 ## Struktur
@@ -19,6 +20,7 @@ Skill Claude untuk menulis buku ajar, modul praktikum, dan diktat matematika, st
 buku-praktikum/               # folder skill (inilah yang dipasang)
 ├── SKILL.md
 ├── agents/                   # instruksi per agen
+├── claude-agents/            # peran sebagai jenis agen Claude Code (model bawaan per peran)
 ├── references/               # pedagogi, literatur, struktur bab, narasi, istilah, kode, rumus
 ├── scripts/                  # init_naskah.py, cek_gerbang.py, dan empat pemeriksa
 └── assets/                   # templat artefak, glosarium, _quarto.yml
@@ -45,6 +47,12 @@ Skill ini paling baik dipakai bersama [skill-eyd](https://github.com/madsyair/sk
 python buku-praktikum/scripts/init_naskah.py --root path/ke/proyek --judul "Judul Buku"
 python buku-praktikum/scripts/init_naskah.py --root path/ke/proyek --bab-baru 1
 python buku-praktikum/scripts/cek_gerbang.py --root path/ke/proyek
+```
+
+Opsi `--pasang-agen` (bawaan: tidak) menyalin `claude-agents/buku-praktikum-aN-*.md` ke `path/ke/proyek/.claude/agents/`, sehingga setiap peran A1–A14 menjadi jenis agen Claude Code dengan model bawaannya. Berkasnya hanya merujuk ke `agents/aN-*.md`; A0 (orkestrator) adalah sesi utama dan tidak dipasang. Berkas yang sudah ada tidak ditimpa. Periksa hasilnya dengan `python buku-praktikum/scripts/cek_agen.py --folder path/ke/proyek/.claude/agents`.
+
+```bash
+python buku-praktikum/scripts/init_naskah.py --root path/ke/proyek --pasang-agen
 ```
 
 ## Menjalankan uji

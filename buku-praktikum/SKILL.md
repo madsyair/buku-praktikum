@@ -49,6 +49,8 @@ Setiap agen punya berkas instruksi di `agents/`. Baca berkas agen sebelum menjal
 
 **Pemisahan peran disengaja.** A2v, A8, A11v, A12, dan A14 bekerja dengan **konteks bersih**: mereka hanya membaca artefak dari berkas, tidak melihat penalaran agen yang membuatnya, supaya pekerjaan tidak menilai dirinya sendiri. Bila alat subagen (Agent/Task) tersedia, jalankan setiap agen sebagai subagen, dan agen berkonteks bersih selalu sebagai subagen baru. A13 harus agen yang berbeda dari A12, dan A11v berbeda dari A11. Bila tidak tersedia, jalankan peran secara berurutan dalam satu konteks, baca ulang artefak dari berkas untuk A2v dan A8, lalu sebutkan kepada pengguna bahwa ulasan dilakukan tanpa isolasi konteks.
 
+**Model per peran.** Setiap peran punya model bawaan: opus untuk perencanaan, penulisan, verifikasi, dan kunci; sonnet untuk pembaca dan penyuntingan berpola; haiku untuk tugas mekanis; fable boleh menggantikan opus pada A7, A2v, dan A11v. Tabel dan aturan naik/turun satu tingkat ada di `agents/a0-orkestrator.md` (Pilih model per peran), dasarnya di `references/kajian-model.md`. Agar modelnya otomatis, `init_naskah.py --pasang-agen` menyalin `claude-agents/buku-praktikum-aN-*.md` ke `<proyek>/.claude/agents/` sebagai jenis agen Claude Code (bawaan: tidak dipasang); tiap berkas hanya merujuk ke `agents/aN-*.md`.
+
 ## Mode
 
 Pilih mode di awal agar biaya proses sepadan dengan pekerjaannya, lalu catat di `STATE.md`.
@@ -88,6 +90,7 @@ Tahap dalam kurung siku bersifat pilihan dan diaktifkan di `gerbang.json`:
 ```bash
 python <skill-dir>/scripts/init_naskah.py --root <proyek> --judul "<judul>"
 python <skill-dir>/scripts/init_naskah.py --root <proyek> --bab-baru 1
+python <skill-dir>/scripts/init_naskah.py --root <proyek> --pasang-agen   # opsional: peran sebagai agen Claude Code
 ```
 
 Skrip membuat `naskah/` beserta templat artefak, `harness/STATE.md`, `harness/gerbang.json` (mencari lokasi pemeriksa EYD secara otomatis), glosarium bawaan, dan `_quarto.yml`. Berkas yang sudah ada tidak ditimpa tanpa `--force`.
@@ -145,6 +148,7 @@ Setiap putaran dicatat di `STATE.md`. Jika anggaran putaran habis, perbaikan ter
 | `references/gaya-buku-ajar.md` | Tahap gaya akhir: sapaan *kita*, semi-formal, istilah, rujukan seperlunya, ukuran GG | A12, A13, A14 |
 | `references/kunci-jawaban.md` | Kunci berubrik, temuan soal, pemeriksaan independen, GK | A11, A11v |
 | `references/pelajaran-proyek.md` | Kesalahan berulang dari proyek buku ajar dan pencegahannya | A4, A5, A6, A7, A8, A11v |
+| `references/kajian-model.md` | Uji banding model per peran dan cara memperbarui tabel model | A0, pemelihara skill |
 | `references/kajian-adaptasi-buku-ajar.md` | Kajian bagian skill buku-ajar yang diadaptasi ke skill ini (diterapkan dan diusulkan) | A0, pemelihara skill |
 
 Templat ada di `assets/` (brief, literatur, rancangan, kerangka bab, bab Quarto, ulasan, ulasan gaya, kunci bab, temuan soal, KEPUTUSAN, STATE, `_quarto.yml`, `glosarium.csv`).
@@ -153,11 +157,12 @@ Templat ada di `assets/` (brief, literatur, rancangan, kerangka bab, bab Quarto,
 
 | Skrip | Fungsi |
 |---|---|
-| `scripts/init_naskah.py` | Menyiapkan folder kerja dan berkas per bab |
+| `scripts/init_naskah.py` | Menyiapkan folder kerja dan berkas per bab; `--pasang-agen` memasang peran sebagai agen Claude Code |
 | `scripts/cek_gerbang.py` | Menjalankan gerbang G0–G9, GG, dan GK |
 | `scripts/jalankan_kode.py` | Menjalankan blok R/Python/Julia berurutan per sesi, mencatat versi, galat, dan peringatan |
 | `scripts/cek_rumus.py` | Memeriksa penulisan rumus dan simbol: kalimat diawali lambang, simbol tanpa keterangan, arti ganda, pemenggalan rumus, operator miring (dipanggil G6) |
 | `scripts/cek_turunan.py` | Memeriksa setiap langkah penurunan dengan SymPy: simbolik, titik acak, dan titik pembantah |
+| `scripts/cek_agen.py` | Memeriksa `claude-agents/` (atau `--folder <proyek>/.claude/agents`): frontmatter sah, model ∈ {opus, sonnet, haiku, fable}, setiap peran punya tepat satu pasangan |
 | `scripts/cek_istilah.py` | Memeriksa konsistensi istilah, padanan pada kemunculan pertama, dan huruf miring istilah asing |
 
 Bila interpreter atau paket belum terpasang, pasang dulu (`pip install sympy`, `apt-get install r-base`, `install.packages`). Bila tetap tidak bisa, katakan terus terang kepada pengguna bagian mana yang belum dijalankan; jangan menulis keluaran atau hasil pemeriksaan karangan.

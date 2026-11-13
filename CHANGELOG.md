@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 (2026-11-13)
+
+Model per peran (keputusan penulis 2026-11-13), mengikuti skema skill buku-ajar dan hasil uji banding.
+
+- **Tabel model per peran** di `agents/a0-orkestrator.md` (bagian *Pilih model per peran*), dengan alasan satu baris per peran: **opus** untuk A1, A3, A4, A5, A6, A7, A2v, A11, A11v; **sonnet** untuk A2, A8, A9, A10, A12, A13, A14; **haiku** untuk tugas mekanis di luar peran (menjalankan dan merangkum gerbang, inventaris, rakit ulang A10 tanpa prakata baru; hasil hitungan tetap dicek skrip); **fable** boleh menggantikan opus pada A7, A2v, dan A11v. A10 bawaannya sonnet, bukan haiku, karena juga menulis prakata.
+- Aturan naik atau turun satu tingkat (dicatat di `STATE.md`) dan dua reviewer berbeda model (opus dan fable) untuk bab penting.
+- **`claude-agents/`**: 16 berkas `buku-praktikum-aN-nama.md` (A1–A14, termasuk A2v dan A11v) berfrontmatter Claude Code `name`, `description`, `model`, dan `tools` untuk peran pemeriksa yang tidak menyunting naskah (A7, A8, A11v, A12, A14) serta A2v (hanya menyunting status klaim); isinya merujuk ke `agents/aN-*.md`.
+- **`init_naskah.py --pasang-agen`** menyalin `claude-agents/` ke `<proyek>/.claude/agents/` (tidak menimpa tanpa `--force`).
+- **`scripts/cek_agen.py`**: frontmatter sah, `model` ∈ {opus, sonnet, haiku, fable}, nama sama dengan berkas, setiap peran di `agents/` (kecuali A0) punya tepat satu pasangan.
+- **`references/kajian-model.md`**: ringkasan uji banding (fable setara opus untuk reviewer pada dua uji, sonnet cukup untuk pembaca pemula, haiku tepat untuk hitungan mekanis) dan cara memperbarui tabel lewat uji banding.
+- Uji baru: frontmatter dan model sah, pasangan setiap peran, kesesuaian tabel A0 dengan frontmatter, model tidak sah ditolak, `--pasang-agen` menyalin dan tidak menimpa.
+
 ## 0.3.0 (2026-11-10)
 
 Usulan U1, U2, U4, U5, dan U6 dari kajian adaptasi buku-ajar diterapkan (U3 ditunda).
